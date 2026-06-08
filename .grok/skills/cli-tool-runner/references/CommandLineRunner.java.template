@@ -16,6 +16,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @SuppressWarnings({"squid:S1148", "squid:S2221"})
@@ -33,10 +37,16 @@ public class {{RUNNER_CLASS}} implements CommandLineRunner {
     public void run(final String... args) {
         Option helpOption = new Option("h", "help", false, "print this help-screen.");
         Option runOption = new Option("r", "run", false, "run the main application logic.");
+        Option filesOption = Option.builder("f")
+                .longOpt("files")
+                .hasArgs()
+                .desc("selected files to process (required with --run)")
+                .build();
 
         Options options = new Options();
         options.addOption(helpOption);
         options.addOption(runOption);
+        options.addOption(filesOption);
 
         try {
             CommandLineParser parser = new DefaultParser();
@@ -44,12 +54,19 @@ public class {{RUNNER_CLASS}} implements CommandLineRunner {
 
             if (cmd.hasOption("run")) {
                 LOG.info("run --{}", runOption.getLongOpt());
-                {{CORE_SERVICE_BEAN}}.run();
+                String[] filePaths = cmd.getOptionValues("files");
+                if (filePaths == null || filePaths.length == 0) {
+                    throw new {{EXCEPTION_CLASS}}("Option --files is required with --run (at least one file)");
+                }
+                List<File> files = Arrays.stream(filePaths)
+                        .map(File::new)
+                        .collect(Collectors.toList());
+                {{CORE_SERVICE_BEAN}}.run(files);
             } else {
                 LOG.info("run --help");
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp(120,
-                        "\n  {{SHELL_SCRIPT_NAME}} -run --{{CONFIG_PREFIX}}.some-property=value\n\n",
+                        "\n  {{SHELL_SCRIPT_NAME}} -run --files <file1> <file2> ... --{{CONFIG_PREFIX}}.some-property=value\n\n",
                         "{{SHELL_SCRIPT_NAME}}",
                         options,
                         "\n© {{AUTHOR}}");

@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @SuppressWarnings({"squid:S1148", "squid:S2221"})
@@ -40,6 +43,11 @@ public class SmartNamingRunner implements CommandLineRunner {
     public void run(final String... args) {
         Option helpOption = new Option("h", "help", false, "print this help-screen.");
         Option runOption = new Option("r", "run", false, "run the main application logic.");
+        Option filesOption = Option.builder("f")
+                .longOpt("files")
+                .hasArgs()
+                .desc("selected files to process (required with --run)")
+                .build();
         Option generateRegistryOption = new Option("gwre", "generateWindowsRegistryEntries", false,
                 "generate Windows Registry files for File Explorer context menu");
         Option importRegistryOption = new Option("i", "install", false,
@@ -48,6 +56,7 @@ public class SmartNamingRunner implements CommandLineRunner {
         Options options = new Options();
         options.addOption(helpOption);
         options.addOption(runOption);
+        options.addOption(filesOption);
         options.addOption(generateRegistryOption);
         options.addOption(importRegistryOption);
 
@@ -57,7 +66,14 @@ public class SmartNamingRunner implements CommandLineRunner {
 
             if (cmd.hasOption("run")) {
                 LOG.info("run --{}", runOption.getLongOpt());
-                smartNamingService.run();
+                String[] filePaths = cmd.getOptionValues("files");
+                if (filePaths == null || filePaths.length == 0) {
+                    throw new SmartNamingException("Option --files is required with --run (at least one file)");
+                }
+                List<File> files = Arrays.stream(filePaths)
+                        .map(File::new)
+                        .collect(Collectors.toList());
+                smartNamingService.run(files);
             } else if (cmd.hasOption("gwre")) {
                 LOG.info("run --{}", generateRegistryOption.getLongOpt());
                 generateWindowsRegistryEntries.generateRegistry();
@@ -69,7 +85,7 @@ public class SmartNamingRunner implements CommandLineRunner {
                 LOG.info("run --help");
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp(120,
-                        "\n  smartnaming -run --smartnaming.some-property=value\n\n",
+                        "\n  smartnaming -run --files <file1> <file2> ... --smartnaming.some-property=value\n\n",
                         "smartnaming",
                         options,
                         "\n© Brabenetz Harald");

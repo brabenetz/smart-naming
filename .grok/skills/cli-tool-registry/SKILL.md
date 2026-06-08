@@ -37,18 +37,32 @@ Plus per context menu entry: command name and CLI arguments.
    - `WindowsRegistryConfigs.java.template` → `config/WindowsRegistryConfigs.java`
    - `GenerateWindowsRegistryEntries.java.template` → `core/GenerateWindowsRegistryEntries.java`
    - `ImportWindowsRegistry.java.template` → `core/ImportWindowsRegistry.java`
-2. Replace `{{REGISTRY_ENTRIES}}` in `GenerateWindowsRegistryEntries` with `addCommandToRegistry()` calls:
+2. Replace `{{REGISTRY_ENTRIES}}` in `GenerateWindowsRegistryEntries` with `addCommandToRegistry()` calls.
+
+**Multi-file selection (recommended for file tools):**
 
 ```java
 addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
-        "-run", "--{{CONFIG_PREFIX}}.some-property=%1");
+        "-run", "--files", "%*");
 ```
+
+Registry key: `HKEY_CLASSES_ROOT\*\shell\` (all file types, multi-select).
+
+**Single folder selection (legacy):**
+
+```java
+addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+        "-copy", "--{{CONFIG_PREFIX}}.source-folder=%1");
+```
+
+Registry key: `HKEY_CLASSES_ROOT\Directory\shell\`.
 
 3. Add shell scripts:
    - `generateRegistry.cmd.template` → `src/main/assembly/shell/generateWindowsRegistryEntries.cmd`
    - `installRegistry.cmd.template` → `src/main/assembly/shell/installWindowsRegistry.cmd`
 4. Extend `{{RUNNER_CLASS}}` with registry CLI options using [references/CommandLineRunner-registry.java.template](references/CommandLineRunner-registry.java.template).
-5. Add registry properties to `application.properties` (see `cli-tool-runner` template).
+5. Add `--files` option to runner (required with `--run`) — see `cli-tool-runner`.
+6. Add registry properties to `application.properties` (see `cli-tool-runner` template).
 
 ## Runner Extension
 
@@ -71,12 +85,22 @@ Option importRegistryOption = new Option("i", "install", false,
 
 Inject `GenerateWindowsRegistryEntries` and `ImportWindowsRegistry` via `@Resource`.
 
+## `%*` Quoting Rule
+
+When the last argument is `%*`, it must remain **unquoted** in the registry command line so Explorer expands all selected file paths:
+
+```
+"\"...\MyApp-Registry.cmd\" \"-run\" \"--files\" %*"
+```
+
+`buildRegistryCommandLine()` in the template handles this automatically.
+
 ## Generated Files
 
 | File | Purpose |
 |---|---|
 | `{{APP_NAME}}-Registry.cmd` | Wrapper: `cd` to install dir, call `{{SHELL_SCRIPT_NAME}}.cmd` |
-| `{{APP_NAME}}-Install.reg` | Registry entries under `HKEY_CLASSES_ROOT\Directory\shell\` |
+| `{{APP_NAME}}-Install.reg` | Registry entries under `HKEY_CLASSES_ROOT\*\shell\` or `Directory\shell\` |
 
 Encoding: ISO-8859-1 for Windows compatibility.
 

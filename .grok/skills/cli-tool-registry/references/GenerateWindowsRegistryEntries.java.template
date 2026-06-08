@@ -53,16 +53,28 @@ public class GenerateWindowsRegistryEntries {
 
     private void addCommandToRegistry(Collection<String> lines, String commandName, File commandFile, String... args) throws IOException {
         String commandCanonicalPath = commandFile.getCanonicalPath();
-        String commandLine = "\"" + Stream.concat(Arrays.stream(new String[] {commandCanonicalPath}), Arrays.stream(args))
-                .collect(Collectors.joining("\" \"")) + "\"";
+        String commandLine = buildRegistryCommandLine(commandCanonicalPath, args);
 
-        lines.add(String.format("[HKEY_CLASSES_ROOT\\Directory\\shell\\%s]", commandName));
+        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandName));
         lines.add(String.format("@=\"%s\"", commandName));
         lines.add(System.lineSeparator());
 
-        lines.add(String.format("[HKEY_CLASSES_ROOT\\Directory\\shell\\%s\\command]", commandName));
+        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandName));
         lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
         lines.add(System.lineSeparator());
+    }
+
+    private String buildRegistryCommandLine(String commandCanonicalPath, String... args) {
+        if (args.length > 0 && "%*".equals(args[args.length - 1])) {
+            String[] quotedArgs = Arrays.copyOf(args, args.length - 1);
+            String quotedPart = Stream.concat(Arrays.stream(new String[] {commandCanonicalPath}), Arrays.stream(quotedArgs))
+                    .map(arg -> "\"" + arg + "\"")
+                    .collect(Collectors.joining(" "));
+            return quotedPart + " %*";
+        }
+        return Stream.concat(Arrays.stream(new String[] {commandCanonicalPath}), Arrays.stream(args))
+                .map(arg -> "\"" + arg + "\"")
+                .collect(Collectors.joining(" "));
     }
 
     private File createCommandFile(File targetFolder) throws IOException {

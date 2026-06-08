@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.util.List;
 
 @Service
 public class SmartNamingService {
@@ -15,7 +17,8 @@ public class SmartNamingService {
     @Resource
     private SmartNamingConfigs smartNamingConfigs;
 
-    public void run() {
-        LOG.info("Running Smart-Naming with property: {}", smartNamingConfigs.getSomeProperty());
+    public void run(List<File> files) {
+        LOG.info("Running Smart-Naming for {} file(s) with property: {}", files.size(), smartNamingConfigs.getSomeProperty());
+        files.forEach(file -> LOG.info("  file: {}", file.getAbsolutePath()));
     }
 }

@@ -1,7 +1,9 @@
 // Replace {{REGISTRY_ENTRIES}} in GenerateWindowsRegistryEntries.java with calls like:
 
+// Multi-file selection (Explorer: mark multiple files, context menu):
+addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+        "-run", "--files", "%*");
+
+// Single-folder selection (legacy, Directory context menu — change *\shell to Directory\shell in template):
 addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}} Simulation", commandFile,
         "-run", "--{{CONFIG_PREFIX}}.some-property=%1", "--{{CONFIG_PREFIX}}.simulate=true");
-
-addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
-        "-run", "--{{CONFIG_PREFIX}}.some-property=%1", "--{{CONFIG_PREFIX}}.simulate=false");
