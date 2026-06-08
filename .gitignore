@@ -1,0 +1,11 @@
+/target/
+/log/
+/.settings/
+/.classpath
+/.factorypath
+/.project
+/.checkstyle
+/.pmd
+/.ruleset
+/.eclipse-pmd
+/bin
