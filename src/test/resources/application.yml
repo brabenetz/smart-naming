@@ -1,0 +1,18 @@
+smartnaming:
+  used-model: local-qwen
+  models:
+    local-qwen:
+      url: http://localhost:1234/v1
+      model: qwen3.5_4B-test
+    open-ai:
+      url: https://api.openai.com/v1
+      model: gpt-4-test
+      auth:
+        api-token: test-token
+  system-prompt: |
+    Test system prompt line 1
+    Test system prompt line 2
+
+windows-registry:
+  target-folder: ./target/tests/SmartNamingCommandLineApplicationIntegrationTest/
+  installation-folder: ./src/main/assembly/shell

@@ -1,5 +1,6 @@
 package net.brabenetz.tools.smart.naming.core;
 
+import net.brabenetz.tools.smart.naming.config.LlmModelConfig;
 import net.brabenetz.tools.smart.naming.config.SmartNamingConfigs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,11 @@ public class SmartNamingService {
     private SmartNamingConfigs smartNamingConfigs;
 
     public void run(List<File> files) {
-        LOG.info("Running Smart-Naming for {} file(s) with property: {}", files.size(), smartNamingConfigs.getSomeProperty());
+        LlmModelConfig activeModel = smartNamingConfigs.resolveActiveModel();
+        LOG.info("Running Smart-Naming for {} file(s) with model key '{}': url={}, model={}",
+                files.size(), smartNamingConfigs.getUsedModel(), activeModel.getUrl(), activeModel.getModel());
+        LOG.info("System prompt length: {} characters", smartNamingConfigs.getSystemPrompt() != null
+                ? smartNamingConfigs.getSystemPrompt().length() : 0);
         files.forEach(file -> LOG.info("  file: {}", file.getAbsolutePath()));
     }
 }

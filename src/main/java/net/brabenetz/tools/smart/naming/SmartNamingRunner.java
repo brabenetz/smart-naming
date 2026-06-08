@@ -85,7 +85,7 @@ public class SmartNamingRunner implements CommandLineRunner {
                 LOG.info("run --help");
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp(120,
-                        "\n  smartnaming -run --files <file1> <file2> ... --smartnaming.some-property=value\n\n",
+                        "\n  smartnaming -run --files <file1> <file2> ... --smartnaming.used-model=<key>\n\n",
                         "smartnaming",
                         options,
                         "\n© Brabenetz Harald");
