@@ -22,15 +22,36 @@ Implement a custom `org.springframework.boot.Banner` with ASCII art and version 
 | `{{BANNER_CLASS}}` | `MyAppBanner` |
 | `{{APP_CLASS}}` | `MyAppCommandLineApplication` |
 | `{{APP_DISPLAY_NAME}}` | `My-App` |
-| `{{BANNER_LINE_1}}` … `{{BANNER_LINE_8}}` | ASCII art lines |
+| `{{BANNER_TEXT}}` | `My App` (display name, hyphens → spaces) |
+| `{{BANNER_LINE_1}}` … `{{BANNER_LINE_8}}` | 6 art lines + 2 underline lines |
 
 ## Steps
 
-1. Generate ASCII art at http://patorjk.com/software/taag/ (recommended font: Big).
-2. Copy [references/Banner.java.template](references/Banner.java.template), replace tokens.
-3. Set `BANNER` array lines from generated art. Adjust array size if needed.
-4. Copy [references/BannerTest.java.template](references/BannerTest.java.template) for unit test.
-5. Wire banner in `{{APP_CLASS}}` via parent `SpringApplicationBuilder` (see `cli-tool-runner`).
+1. Generate ASCII art at http://patorjk.com/software/taag/:
+   - Font: **Big**
+   - Text: `<< {{BANNER_TEXT}} >>` (e.g. `<< Smart Naming >>`)
+   - Width ≥ 200 (prevents `>>` from wrapping below)
+   - See [references/banner-generation.md](references/banner-generation.md)
+2. Apply the **Big Variant** underline pattern (see below).
+3. Copy [references/Banner.java.template](references/Banner.java.template), replace tokens.
+4. Set `BANNER` array: 6 art lines + 2 underline lines. Pad to uniform width.
+5. Copy [references/BannerTest.java.template](references/BannerTest.java.template) for unit test.
+6. Wire banner in `{{APP_CLASS}}` via parent `SpringApplicationBuilder` (see `cli-tool-runner`).
+
+## Big Variant Underline
+
+Figlet/patorjk Big font renders descenders (`g`, `y`, `p`, `q`, `j`) on lines 7–8. Replace those rows:
+
+| Line | Fill | Content |
+|------|------|---------|
+| 7 | `_` | Leading space + underscores + **preserved descender from art line 7** + underscores |
+| 8 | `-` | Leading space + dashes + **preserved descender from art line 8** + dashes |
+
+The descender glyphs must not be overwritten (e.g. `__/ |` and `|___/` for `g`).
+
+Compute underline lines with [references/compute-banner-underlines.js](references/compute-banner-underlines.js).
+
+Reference implementations: `PictureCopyBanner.java`, `MailBackupBanner.java`.
 
 ## Version Display
 
@@ -57,3 +78,4 @@ This runs after the banner, through normal SLF4J logging.
 - `STRAP_LINE_SIZE` = max line length in `BANNER` array (for right-aligned version)
 - App name line: green ANSI color, faint version
 - Avoid Unicode box-drawing fonts (broken in Git Bash on Windows)
+- All 8 `BANNER` lines must have identical width (pad with trailing spaces)

@@ -11,7 +11,8 @@ import java.util.Arrays;
 
 public class {{BANNER_CLASS}} implements Banner {
 
-    // Generate ASCII art at http://patorjk.com/software/taag/
+    // patorjk Big font: http://patorjk.com/software/taag/#p=display&f=Big&t=%3C%3C%20{{BANNER_TEXT_URL_ENCODED}}%20%3E%3E&w=200
+    // Lines 1-6: ASCII art; lines 7-8: underscore/dash underlines with spared descenders (see banner-generation.md)
     private static final String[] BANNER = {
             "{{BANNER_LINE_1}}",
             "{{BANNER_LINE_2}}",

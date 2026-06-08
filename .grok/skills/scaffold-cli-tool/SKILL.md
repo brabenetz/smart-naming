@@ -37,7 +37,8 @@ Ask the user for these values (provide sensible defaults derived from artifact n
 | `author` | default `Brabenetz Harald` | |
 | `TARGET_DIR` | new folder path (stored as `{{TARGET_DIR}}`) | `../my-app` |
 | `enableRegistry` | yes/no | `yes` |
-| `bannerLines` | ASCII art (8 lines) or patorjk link | |
+| `bannerText` | display name with spaces | `Smart Naming` (→ `<< Smart Naming >>` on patorjk) |
+| `bannerLines` | 6 art + 2 underline lines (see `cli-tool-banner`) | |
 
 Derived tokens (from `appName` = PascalCase of artifactId, `shellScriptName` = artifactId without hyphens):
 

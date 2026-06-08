@@ -22,7 +22,11 @@ All templates use `{{TOKEN}}` placeholders. Replace every occurrence when scaffo
 | `{{APP_NAME}}` | PascalCase short name | `PictureCopy` |
 | `{{SHELL_SCRIPT_NAME}}` | executable base name | `picturecopy` |
 | `{{AUTHOR}}` | help footer | `Brabenetz Harald` |
-| `{{BANNER_LINE_1}}` … `{{BANNER_LINE_8}}` | ASCII art lines | from patorjk.com |
+| `{{BANNER_TEXT}}` | patorjk input (no brackets) | `Smart Naming` |
+| `{{BANNER_TEXT_URL_ENCODED}}` | URL-encoded banner text | `Smart%20Naming` |
+| `{{BANNER_LINE_1}}` … `{{BANNER_LINE_6}}` | patorjk Big art lines | from patorjk.com, width ≥ 200 |
+| `{{BANNER_LINE_7}}` | underscore underline with spared descender | `___… __/ | ___…` |
+| `{{BANNER_LINE_8}}` | dash underline with spared descender | `---… |___/ ---…` |
 | `{{REGISTRY_ENTRIES}}` | `addCommandToRegistry()` calls | see registry-entries.example.txt |
 | `{{PROJECT_ROOT}}` | illustrative root in directory layout | project root path |
 | `{{TARGET_DIR}}` | scaffold output directory | `../my-app` |
