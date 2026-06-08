@@ -1,0 +1,42 @@
+package {{PACKAGE_NAME}};
+
+import org.junit.Test;
+
+import java.io.File;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class {{APP_CLASS}}IntegrationTest {
+
+    private static final File TEST_RESULT_DIRECTORY = new File("./target/tests/{{APP_CLASS}}IntegrationTest");
+
+    @Test
+    public void runDefaultHelp() {
+        {{APP_CLASS}}.main();
+        assertThat(TEST_RESULT_DIRECTORY).doesNotExist();
+    }
+
+    @Test
+    public void runMainShort() {
+        {{APP_CLASS}}.main("-run");
+    }
+
+    @Test
+    public void runMainLong() {
+        {{APP_CLASS}}.main("--run");
+    }
+
+    @Test
+    public void runGenerateWindowsRegistryEntriesShort() {
+        {{APP_CLASS}}.main("-gwre");
+        assertThat(new File(TEST_RESULT_DIRECTORY, "{{APP_NAME}}-Registry.cmd")).exists();
+        assertThat(new File(TEST_RESULT_DIRECTORY, "{{APP_NAME}}-Install.reg")).exists();
+    }
+
+    @Test
+    public void runGenerateWindowsRegistryEntriesLong() {
+        {{APP_CLASS}}.main("--generateWindowsRegistryEntries");
+        assertThat(new File(TEST_RESULT_DIRECTORY, "{{APP_NAME}}-Registry.cmd")).exists();
+        assertThat(new File(TEST_RESULT_DIRECTORY, "{{APP_NAME}}-Install.reg")).exists();
+    }
+}

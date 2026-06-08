@@ -1,0 +1,11 @@
+package {{PACKAGE_NAME}};
+
+import org.junit.Test;
+
+public class {{BANNER_CLASS}}Test {
+
+    @Test
+    public void testPrintBanner() throws Exception {
+        new {{BANNER_CLASS}}().printBanner(null, null, System.out);
+    }
+}

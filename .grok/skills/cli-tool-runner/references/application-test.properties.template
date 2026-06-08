@@ -1,0 +1,5 @@
+{{CONFIG_PREFIX}}.some-property=test-value
+
+# For integration tests:
+windows-registry.target-folder=./target/tests/{{APP_CLASS}}IntegrationTest/
+windows-registry.installation-folder=./src/main/assembly/shell

@@ -1,0 +1,19 @@
+package {{PACKAGE_NAME}}.config;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+@Component
+@ConfigurationProperties(prefix = "{{CONFIG_PREFIX}}")
+public class {{CONFIG_CLASS}} {
+
+    private String someProperty = "default-value";
+
+    public String getSomeProperty() {
+        return someProperty;
+    }
+
+    public void setSomeProperty(String someProperty) {
+        this.someProperty = someProperty;
+    }
+}

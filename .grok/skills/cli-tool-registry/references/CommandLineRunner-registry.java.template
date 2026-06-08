@@ -1,0 +1,24 @@
+// Registry options to add in {{RUNNER_CLASS}}.run():
+
+@Resource
+private GenerateWindowsRegistryEntries generateWindowsRegistryEntries;
+
+@Resource
+private ImportWindowsRegistry importWindowsRegistry;
+
+Option generateRegistryOption = new Option("gwre", "generateWindowsRegistryEntries", false,
+        "generate Windows Registry files for File Explorer context menu");
+Option importRegistryOption = new Option("i", "install", false,
+        "install Windows Registry entries (requires Administrator)");
+
+options.addOption(generateRegistryOption);
+options.addOption(importRegistryOption);
+
+// In the command handler, before the help branch:
+} else if (cmd.hasOption("gwre")) {
+    LOG.info("run --{}", generateRegistryOption.getLongOpt());
+    generateWindowsRegistryEntries.generateRegistry();
+} else if (cmd.hasOption("i")) {
+    LOG.info("run --{}", importRegistryOption.getLongOpt());
+    File registryFile = generateWindowsRegistryEntries.generateRegistry();
+    importWindowsRegistry.importRegistry(registryFile);
