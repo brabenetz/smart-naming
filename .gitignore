@@ -11,3 +11,5 @@
 /bin
 # Grok Build generierte Agent-Tools
 /agent-tools
+# local properties files for api-tokens: they will be encrypted, but no need to check-in.
+/application.properties
