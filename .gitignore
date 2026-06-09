@@ -9,3 +9,5 @@
 /.ruleset
 /.eclipse-pmd
 /bin
+# Grok Build generierte Agent-Tools
+/agent-tools
