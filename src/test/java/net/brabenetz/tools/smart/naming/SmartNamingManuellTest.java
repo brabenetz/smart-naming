@@ -27,9 +27,9 @@ public class SmartNamingManuellTest {
                 .run()) {
 
             SmartNamingService smartNamingService = context.getBean(SmartNamingService.class);
-            List<File> files = getFiles("testfile A (1).jpg", "testfile A (2).jpg");
-            // - testfile A (1).jpg -> 2026-04-23_Stromnetz-Graz_Smart-Meter-Anpassung_(1).jpg
+            List<File> files = getFiles("testfile A (2).jpg", "testfile A (1).jpg");
             // - testfile A (2).jpg -> 2026-04-23_Stromnetz-Graz_Smart-Meter-Anpassung_(2).jpg
+            // - testfile A (1).jpg -> 2026-04-23_Stromnetz-Graz_Smart-Meter-Anpassung_(1).jpg
             // List<File> files = getFiles("testfile B.jpg"); // 2022-02-01_Billa_Einkauf_6,72EUR.jpg
             // List<File> files = getFiles("testfile C.jpg"); // 2022-02-01_Lidl_Einkauf-Rechnung_5,60EUR.jpg
             // List<File> files = getFiles("testfile D.jpg"); // 2022-02-02_Buchmesser_Rechnung_22,00EUR.jpg
