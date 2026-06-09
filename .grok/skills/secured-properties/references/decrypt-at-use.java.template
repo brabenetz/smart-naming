@@ -1,0 +1,11 @@
+// Snippet — decrypt late at point of use, never cache decrypted value
+
+public SomeClient createClient({{CONFIG_CLASS}} config) {
+    String secret = "default";
+    if (StringUtils.isNotBlank(config.getApiToken())) {
+        secret = SecuredPropertiesHelper.decrypt(config.getApiToken());
+    }
+    return SomeClient.builder()
+            .apiKey(secret)
+            .build();
+}

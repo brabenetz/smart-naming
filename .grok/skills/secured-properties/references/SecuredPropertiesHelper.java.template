@@ -1,0 +1,38 @@
+package {{PACKAGE_NAME}}.config;
+
+import net.brabenetz.lib.securedproperties.SecuredProperties;
+import net.brabenetz.lib.securedproperties.SecuredPropertiesConfig;
+
+import java.io.File;
+
+public class SecuredPropertiesHelper {
+
+    private static final SecuredPropertiesConfig CONFIG = new SecuredPropertiesConfig().initDefault();
+
+    private static final File[] PROPERTY_FILES = new File[] {
+            new File("./config/application.properties"),
+            new File("./application.properties")
+    };
+
+    private SecuredPropertiesHelper() {
+        // hide constructor
+    }
+
+    public static void encryptProperties(String... keys) {
+        SecuredProperties.encryptNonEncryptedValues(CONFIG, PROPERTY_FILES, keys);
+    }
+
+    public static String decrypt(String value) {
+        if (SecuredProperties.isEncryptedValue(value)) {
+            return SecuredProperties.decrypt(CONFIG, value);
+        }
+        return value;
+    }
+
+    public static String getEncryptedValue(String value) {
+        if (!SecuredProperties.isEncryptedValue(value)) {
+            return SecuredProperties.encrypt(CONFIG, value);
+        }
+        return value;
+    }
+}

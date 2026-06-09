@@ -1,0 +1,15 @@
+// Snippet for {{APP_CLASS}}.AppPrepare — static encrypt keys (preferred variant)
+
+@EnableConfigurationProperties({{CONFIG_CLASS}}.class) // optional for static keys
+public static class AppPrepare implements InitializingBean {
+
+    @Override
+    public void afterPropertiesSet() {
+        LOG.info("Current Java-Version: {}; OS: {}; Timezone: {}; Lang: {}",
+                SystemUtils.JAVA_VERSION, SystemUtils.OS_NAME, SystemUtils.USER_TIMEZONE, SystemUtils.USER_LANGUAGE);
+
+        SecuredPropertiesHelper.encryptProperties(
+                "{{CONFIG_PREFIX}}.api-token",
+                "{{CONFIG_PREFIX}}.another-secret");
+    }
+}
