@@ -23,6 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.stubbing.Scenario.STARTED;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringRunner.class)
@@ -46,7 +47,11 @@ public class SmartNamingServiceIntegrationTest {
         smartNamingConfigs.setUsedModel("wiremock-test");
         smartNamingConfigs.setMaxRetries(3);
 
-        testImage = OpenAiWireMockSupport.createMinimalJpeg(new File("target/test-tmp/smart-naming-service-test.jpg"));
+        File testTmpDir = new File("target/test-tmp");
+        if (testTmpDir.exists()) {
+            org.apache.commons.io.FileUtils.cleanDirectory(testTmpDir);
+        }
+        testImage = OpenAiWireMockSupport.createMinimalJpeg(new File(testTmpDir, "smart-naming-service-test.jpg"));
 
         wireMockRule.resetAll();
         OpenAiWireMockSupport.stubFileUpload("file-test-1");
@@ -61,6 +66,8 @@ public class SmartNamingServiceIntegrationTest {
 
         verify(postRequestedFor(urlEqualTo("/v1/files")));
         verify(postRequestedFor(urlEqualTo("/v1/chat/completions")));
+        assertThat(testImage).doesNotExist();
+        assertThat(new File(testImage.getParentFile(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg")).exists();
     }
 
     @Test

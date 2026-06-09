@@ -28,6 +28,8 @@ public class SmartNamingService {
     private OpenAiNamingClient openAiNamingClient;
     @Resource
     private FileNamingResponseParser fileNamingResponseParser;
+    @Resource
+    private FileRenameService fileRenameService;
 
     public Map<String, String> run(List<File> files) {
         validateFiles(files);
@@ -57,6 +59,8 @@ public class SmartNamingService {
 
         Map<String, String> suggestions = requestSuggestionsWithRetry(activeModel, effectiveSystemPrompt, uploadedFiles, files);
         suggestions.forEach((original, suggested) -> LOG.info("  suggestion: {} -> {}", original, suggested));
+
+        fileRenameService.renameFiles(files, suggestions);
         return suggestions;
     }
 
