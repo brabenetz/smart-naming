@@ -5,12 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
 @SpringBootTest(classes = SmartNamingConfigsTest.TestConfiguration.class)
 public class SmartNamingConfigsTest {
 
@@ -60,6 +62,20 @@ public class SmartNamingConfigsTest {
     @Test
     public void maxRetriesDefaultFromYaml() {
         assertThat(smartNamingConfigs.getMaxRetries()).isEqualTo(3);
+    }
+
+    @Test
+    public void targetFilenamePatternIsLoadedOrHasDefault() {
+        assertThat(smartNamingConfigs.getTargetFilenamePattern()).isNotBlank();
+        assertThat(smartNamingConfigs.getCompiledTargetFilenamePattern()
+                .matcher("2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg")
+                .matches()).isTrue();
+        assertThat(smartNamingConfigs.getCompiledTargetFilenamePattern()
+                .matcher("2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(2).jpg")
+                .matches()).isTrue();
+        assertThat(smartNamingConfigs.getCompiledTargetFilenamePattern()
+                .matcher("invalid-name.jpg")
+                .matches()).isFalse();
     }
 
     @org.springframework.boot.SpringBootConfiguration

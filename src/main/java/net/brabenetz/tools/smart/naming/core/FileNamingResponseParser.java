@@ -2,10 +2,12 @@ package net.brabenetz.tools.smart.naming.core;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.brabenetz.tools.smart.naming.config.SmartNamingConfigs;
 import net.brabenetz.tools.smart.naming.exception.SmartNamingException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,9 +20,10 @@ import java.util.stream.Collectors;
 public class FileNamingResponseParser {
 
     private static final Pattern MARKDOWN_FENCE = Pattern.compile("^```(?:json)?\\s*|```\\s*$");
-    private static final Pattern FILENAME_PATTERN = Pattern.compile(
-            "^\\d{4}-\\d{2}-\\d{2}_[^_]+_[^_]+(?:_[\\d,]+[A-Za-z]{3})?_\\(\\d+\\)\\.[A-Za-z0-9]+$");
     private static final Pattern INVALID_FILENAME_CHARS = Pattern.compile("[\\\\/:*?\"<>|]");
+
+    @Resource
+    private SmartNamingConfigs smartNamingConfigs;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -81,10 +84,10 @@ public class FileNamingResponseParser {
             if (!newName.contains(".")) {
                 throw new SmartNamingException(String.format("Suggestion for '%s' must contain a file extension: %s", expectedKey, newName));
             }
-            if (!FILENAME_PATTERN.matcher(newName).matches()) {
+            if (!smartNamingConfigs.getCompiledTargetFilenamePattern().matcher(newName).matches()) {
                 throw new SmartNamingException(String.format(
-                        "Suggestion for '%s' does not match required pattern YYYY-MM-DD_SOURCE_DESCRIPTION_(COUNTER).ext: %s",
-                        expectedKey, newName));
+                        "Suggestion for '%s' does not match required pattern %s: %s",
+                        expectedKey, smartNamingConfigs.getTargetFilenamePattern(), newName));
             }
         }
         if (suggestions.size() != expectedKeys.size()) {

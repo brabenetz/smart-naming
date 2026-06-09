@@ -36,14 +36,26 @@ public class SmartNamingService {
         if (StringUtils.isBlank(systemPrompt)) {
             throw new SmartNamingException("smartnaming.system-prompt is not configured");
         }
+        String targetFilenamePattern = smartNamingConfigs.getTargetFilenamePattern();
+        String effectiveSystemPrompt = systemPrompt
+                + "\n\nDie target-Filenames müssen der Expression "
+                + targetFilenamePattern
+                + " entsprechen.";
+        LOG.debug("Using System-Prompt: {}", effectiveSystemPrompt);
 
         LOG.info("Running Smart-Naming for {} file(s) with model key '{}': url={}, model={}",
                 files.size(), smartNamingConfigs.getUsedModel(), activeModel.getUrl(), activeModel.getModel());
 
-        List<UploadedFileReference> uploadedFiles = llmFileContentBuilder.uploadFiles(activeModel, files);
-        uploadedFiles.forEach(uploaded -> LOG.info("  uploaded: {} -> {}", uploaded.getOriginalFileName(), uploaded.getFileId()));
+        List<UploadedFileReference> uploadedFiles = llmFileContentBuilder.prepareFiles(activeModel, files);
+        uploadedFiles.forEach(uploaded -> {
+            if (uploaded.usesFileUpload()) {
+                LOG.info("  uploaded: {} -> {}", uploaded.getOriginalFileName(), uploaded.getFileId());
+            } else {
+                LOG.info("  inline image prepared: {}", uploaded.getOriginalFileName());
+            }
+        });
 
-        Map<String, String> suggestions = requestSuggestionsWithRetry(activeModel, systemPrompt, uploadedFiles, files);
+        Map<String, String> suggestions = requestSuggestionsWithRetry(activeModel, effectiveSystemPrompt, uploadedFiles, files);
         suggestions.forEach((original, suggested) -> LOG.info("  suggestion: {} -> {}", original, suggested));
         return suggestions;
     }

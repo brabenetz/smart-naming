@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 @SuppressWarnings({"squid:S1148", "squid:S2221"})
-@Profile("!test")
+@Profile({"!test", "!manual"})
 public class SmartNamingRunner implements CommandLineRunner {
 
     private static final Logger LOG = LoggerFactory.getLogger(SmartNamingRunner.class);

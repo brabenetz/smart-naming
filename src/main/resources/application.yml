@@ -1,6 +1,7 @@
 # Application DEFAULT configuration (bundled in JAR)
 smartnaming:
   max-retries: 3
+  target-filename-pattern: '^\d{4}-\d{2}-\d{2}_[^_]+_[^_]+(?:_[\d,]+[A-Za-z]{3})?_\(\d+\)\.[A-Za-z0-9]+$'
   system-prompt: |
     You are a document naming assistant. Analyze each attached file and propose a new filename.
 
@@ -13,8 +14,8 @@ smartnaming:
 
     Rules:
     - YYYY-MM-DD: document issue date (required)
-    - SOURCE: issuer or business name, short (required)
-    - DESCRIPTION: very short topic description (required)
+    - SOURCE: issuer or business name, short (required), no underscore '_'
+    - DESCRIPTION: very short topic description (required), no underscore '_'
     - PRICE: optional total amount with currency, e.g. 12,34EUR (for invoices)
     - COUNTER: running number in parentheses, e.g. (1), (2) — required when multiple files are submitted together
     - extension: keep the original file extension

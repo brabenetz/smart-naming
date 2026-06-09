@@ -5,6 +5,7 @@ public class LlmModelConfig {
     private String url;
     private String model;
     private LlmAuthConfig auth;
+    private FileDeliveryMode fileDelivery = FileDeliveryMode.UPLOAD;
 
     public String getUrl() {
         return url;
@@ -28,5 +29,13 @@ public class LlmModelConfig {
 
     public void setAuth(LlmAuthConfig auth) {
         this.auth = auth;
+    }
+
+    public FileDeliveryMode getFileDelivery() {
+        return fileDelivery;
+    }
+
+    public void setFileDelivery(FileDeliveryMode fileDelivery) {
+        this.fileDelivery = fileDelivery;
     }
 }

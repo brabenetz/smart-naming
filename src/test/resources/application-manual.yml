@@ -5,6 +5,7 @@ smartnaming:
     local-qwen:
       url: http://localhost:1234/v1
       model: qwen3.5-4b
+      file-delivery: inline-image
     open-ai:
       url: https://api.openai.com/v1
       model: gpt-4-test

@@ -3,6 +3,7 @@ package net.brabenetz.tools.smart.naming.core;
 import com.openai.client.OpenAIClient;
 import com.openai.models.chat.completions.ChatCompletion;
 import com.openai.models.chat.completions.ChatCompletionContentPart;
+import com.openai.models.chat.completions.ChatCompletionContentPartImage;
 import com.openai.models.chat.completions.ChatCompletionContentPartText;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 import net.brabenetz.tools.smart.naming.config.LlmModelConfig;
@@ -49,12 +50,21 @@ public class OpenAiNamingClient {
                         .build()));
 
         for (UploadedFileReference uploadedFile : uploadedFiles) {
-            parts.add(ChatCompletionContentPart.ofFile(
-                    ChatCompletionContentPart.File.builder()
-                            .file(ChatCompletionContentPart.File.FileObject.builder()
-                                    .fileId(uploadedFile.getFileId())
-                                    .build())
-                            .build()));
+            if (uploadedFile.getInlineImageDataUrl() != null) {
+                parts.add(ChatCompletionContentPart.ofImageUrl(
+                        ChatCompletionContentPartImage.builder()
+                                .imageUrl(ChatCompletionContentPartImage.ImageUrl.builder()
+                                        .url(uploadedFile.getInlineImageDataUrl())
+                                        .build())
+                                .build()));
+            } else {
+                parts.add(ChatCompletionContentPart.ofFile(
+                        ChatCompletionContentPart.File.builder()
+                                .file(ChatCompletionContentPart.File.FileObject.builder()
+                                        .fileId(uploadedFile.getFileId())
+                                        .build())
+                                .build()));
+            }
         }
         return parts;
     }
