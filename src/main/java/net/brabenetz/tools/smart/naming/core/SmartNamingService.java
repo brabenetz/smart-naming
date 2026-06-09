@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class SmartNamingService {
     @Resource
     private FileNamingResponseParser fileNamingResponseParser;
 
-    public void run(List<File> files) {
+    public Map<String, String> run(List<File> files) {
         validateFiles(files);
         LlmModelConfig activeModel = smartNamingConfigs.resolveActiveModel();
         String systemPrompt = smartNamingConfigs.getSystemPrompt();
@@ -44,6 +45,7 @@ public class SmartNamingService {
 
         Map<String, String> suggestions = requestSuggestionsWithRetry(activeModel, systemPrompt, uploadedFiles, files);
         suggestions.forEach((original, suggested) -> LOG.info("  suggestion: {} -> {}", original, suggested));
+        return suggestions;
     }
 
     private Map<String, String> requestSuggestionsWithRetry(LlmModelConfig activeModel, String systemPrompt,

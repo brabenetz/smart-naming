@@ -1,0 +1,19 @@
+smartnaming:
+  used-model: local-qwen
+  max-retries: 3
+  models:
+    local-qwen:
+      url: http://localhost:1234/v1
+      model: qwen3.5-4b
+    open-ai:
+      url: https://api.openai.com/v1
+      model: gpt-4-test
+      auth:
+        api-token: test-token
+    wiremock-test:
+      url: http://localhost:18089/v1
+      model: test-model
+
+windows-registry:
+  target-folder: ./target/tests/SmartNamingCommandLineApplicationIntegrationTest/
+  installation-folder: ./src/main/assembly/shell
