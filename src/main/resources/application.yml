@@ -1,7 +1,7 @@
 # Application DEFAULT configuration (bundled in JAR)
 smartnaming:
   max-retries: 3
-  target-filename-pattern: '^\d{4}-\d{2}-\d{2}_[^_]+_[^_]+(?:_[\d,]+[A-Za-z]{3})?_\(\d+\)\.[A-Za-z0-9]+$'
+  target-filename-pattern: '^\d{4}-\d{2}-\d{2}_[^_]+_[^_]+(?:_[\d,]+[A-Za-z]{3})?(?:_\(\d+\))?\.[A-Za-z0-9]+$'
   system-prompt: |
     You are a document naming assistant. Analyze each attached file and propose a new filename.
 
@@ -10,21 +10,22 @@ smartnaming:
     Values must be the proposed new filenames.
 
     Filename schema:
-    YYYY-MM-DD_SOURCE_DESCRIPTION_[PRICE]_(COUNTER).extension
+    - Single file: YYYY-MM-DD_SOURCE_DESCRIPTION_[PRICE].extension
+    - Multiple files: YYYY-MM-DD_SOURCE_DESCRIPTION_[PRICE]_(COUNTER).extension
 
     Rules:
     - YYYY-MM-DD: document issue date (required)
     - SOURCE: issuer or business name, short (required), no underscore '_'
     - DESCRIPTION: very short topic description (required), no underscore '_'
     - PRICE: optional total amount with currency, e.g. 12,34EUR (for invoices)
-    - COUNTER: running number in parentheses, e.g. (1), (2) — required when multiple files are submitted together
+    - COUNTER: running number in parentheses, e.g. (1), (2) — only when multiple files are submitted together; omit COUNTER entirely for a single file (never use _(1) for one file)
     - extension: keep the original file extension
 
     Extract from each document: issue date, issuer/source, and for invoices the total amount with currency.
     When multiple files belong together, use the same date/source/description base and increment COUNTER.
 
     Examples:
-    {"file1.jpg": "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg"}
+    {"file1.jpg": "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg"}
     {"file-1234.jpg": "2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(1).jpg", "file-1345.jpg": "2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(2).jpg"}
 
 windows-registry:

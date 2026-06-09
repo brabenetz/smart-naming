@@ -45,14 +45,14 @@ public class SmartNamingCommandLineApplicationIntegrationTest {
     @Test
     public void runMainShort() throws IOException {
         File testFile = createTempJpeg("single");
-        stubSuggestion(testFile.getName(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg");
+        stubSuggestion(testFile.getName(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg");
         SmartNamingCommandLineApplication.main("-r", "-f", "--spring.profiles.active=test", testFile.getAbsolutePath());
     }
 
     @Test
     public void runMainLong() throws IOException {
         File testFile = createTempJpeg("single-long");
-        stubSuggestion(testFile.getName(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg");
+        stubSuggestion(testFile.getName(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg");
         SmartNamingCommandLineApplication.main("--run", "--spring.profiles.active=test", "--files", testFile.getAbsolutePath());
     }
 

@@ -14,84 +14,82 @@ import java.util.regex.PatternSyntaxException;
 @ConfigurationProperties(prefix = "smartnaming")
 public class SmartNamingConfigs {
 
-    private static final String DEFAULT_TARGET_FILENAME_PATTERN =
-            "^\\d{4}-\\d{2}-\\d{2}_[^_]+_[^_]+(?:_[\\d,]+[A-Za-z]{3})?_\\(\\d+\\)\\.[A-Za-z0-9]+$";
+  private String usedModel;
+  private Map<String, LlmModelConfig> models = new HashMap<>();
+  private String systemPrompt;
+  private int maxRetries = 3;
+  private String targetFilenamePattern;
+  private Pattern compiledTargetFilenamePattern;
 
-    private String usedModel;
-    private Map<String, LlmModelConfig> models = new HashMap<>();
-    private String systemPrompt;
-    private int maxRetries = 3;
-    private String targetFilenamePattern;
-    private Pattern compiledTargetFilenamePattern;
+  public LlmModelConfig resolveActiveModel() {
+    return resolveModel(usedModel);
+  }
 
-    public LlmModelConfig resolveActiveModel() {
-        return resolveModel(usedModel);
+  public LlmModelConfig resolveModel(String modelKey) {
+    if (StringUtils.isBlank(modelKey)) {
+      throw new SmartNamingException("No model key configured. Set smartnaming.used-model or pass --smartnaming.used-model=<key>");
     }
-
-    public LlmModelConfig resolveModel(String modelKey) {
-        if (StringUtils.isBlank(modelKey)) {
-            throw new SmartNamingException("No model key configured. Set smartnaming.used-model or pass --smartnaming.used-model=<key>");
-        }
-        LlmModelConfig modelConfig = models.get(modelKey);
-        if (modelConfig == null) {
-            throw new SmartNamingException(String.format("Unknown model key '%s'. Available keys: %s", modelKey, models.keySet()));
-        }
-        return modelConfig;
+    LlmModelConfig modelConfig = models.get(modelKey);
+    if (modelConfig == null) {
+      throw new SmartNamingException(String.format("Unknown model key '%s'. Available keys: %s", modelKey, models.keySet()));
     }
+    return modelConfig;
+  }
 
-    public String getUsedModel() {
-        return usedModel;
-    }
+  public String getUsedModel() {
+    return usedModel;
+  }
 
-    public void setUsedModel(String usedModel) {
-        this.usedModel = usedModel;
-    }
+  public void setUsedModel(String usedModel) {
+    this.usedModel = usedModel;
+  }
 
-    public Map<String, LlmModelConfig> getModels() {
-        return models;
-    }
+  public Map<String, LlmModelConfig> getModels() {
+    return models;
+  }
 
-    public void setModels(Map<String, LlmModelConfig> models) {
-        this.models = models;
-    }
+  public void setModels(Map<String, LlmModelConfig> models) {
+    this.models = models;
+  }
 
-    public String getSystemPrompt() {
-        return systemPrompt;
-    }
+  public String getSystemPrompt() {
+    return systemPrompt;
+  }
 
-    public void setSystemPrompt(String systemPrompt) {
-        this.systemPrompt = systemPrompt;
-    }
+  public void setSystemPrompt(String systemPrompt) {
+    this.systemPrompt = systemPrompt;
+  }
 
-    public int getMaxRetries() {
-        return maxRetries;
-    }
+  public int getMaxRetries() {
+    return maxRetries;
+  }
 
-    public void setMaxRetries(int maxRetries) {
-        this.maxRetries = maxRetries;
-    }
+  public void setMaxRetries(int maxRetries) {
+    this.maxRetries = maxRetries;
+  }
 
-    public String getTargetFilenamePattern() {
-        return targetFilenamePattern;
-    }
+  public String getTargetFilenamePattern() {
+    return targetFilenamePattern;
+  }
 
-    public void setTargetFilenamePattern(String targetFilenamePattern) {
-        this.targetFilenamePattern = targetFilenamePattern;
-        this.compiledTargetFilenamePattern = null;
-    }
+  public void setTargetFilenamePattern(String targetFilenamePattern) {
+    this.targetFilenamePattern = targetFilenamePattern;
+    this.compiledTargetFilenamePattern = null;
+  }
 
-    public Pattern getCompiledTargetFilenamePattern() {
-        if (compiledTargetFilenamePattern == null) {
-            String pattern = StringUtils.isNotBlank(targetFilenamePattern)
-                    ? targetFilenamePattern
-                    : DEFAULT_TARGET_FILENAME_PATTERN;
-            try {
-                compiledTargetFilenamePattern = Pattern.compile(pattern);
-            } catch (PatternSyntaxException e) {
-                throw new SmartNamingException(String.format(
-                        "Invalid smartnaming.target-filename-pattern: %s", pattern), e);
-            }
-        }
-        return compiledTargetFilenamePattern;
+  public Pattern getCompiledTargetFilenamePattern() {
+    if (compiledTargetFilenamePattern == null) {
+      if (StringUtils.isBlank(targetFilenamePattern)) {
+        throw new SmartNamingException("The smartnaming.target-filename-pattern is required");
+      }
+      String pattern = targetFilenamePattern;
+      try {
+        compiledTargetFilenamePattern = Pattern.compile(pattern);
+      } catch (PatternSyntaxException e) {
+        throw new SmartNamingException(String.format(
+            "Invalid smartnaming.target-filename-pattern: %s", pattern), e);
+      }
     }
+    return compiledTargetFilenamePattern;
+  }
 }

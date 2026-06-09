@@ -55,7 +55,7 @@ public class SmartNamingServiceIntegrationTest {
     @Test
     public void runReturnsValidSuggestions() {
         OpenAiWireMockSupport.stubChatCompletion(
-                "{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg\"}");
+                "{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg\"}");
 
         smartNamingService.run(Collections.singletonList(testImage));
 
@@ -80,7 +80,7 @@ public class SmartNamingServiceIntegrationTest {
                 .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(validChatBody("{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg\"}"))));
+                        .withBody(validChatBody("{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg\"}"))));
 
         smartNamingService.run(Collections.singletonList(testImage));
 

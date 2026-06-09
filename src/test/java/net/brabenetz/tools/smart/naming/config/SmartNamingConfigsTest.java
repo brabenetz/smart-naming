@@ -68,6 +68,9 @@ public class SmartNamingConfigsTest {
     public void targetFilenamePatternIsLoadedOrHasDefault() {
         assertThat(smartNamingConfigs.getTargetFilenamePattern()).isNotBlank();
         assertThat(smartNamingConfigs.getCompiledTargetFilenamePattern()
+                .matcher("2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg")
+                .matches()).isTrue();
+        assertThat(smartNamingConfigs.getCompiledTargetFilenamePattern()
                 .matcher("2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg")
                 .matches()).isTrue();
         assertThat(smartNamingConfigs.getCompiledTargetFilenamePattern()
