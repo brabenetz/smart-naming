@@ -21,9 +21,9 @@ public class SmartNamingConfigsTest {
     public void resolveActiveModelUsesDefaultFromYaml() {
         LlmModelConfig model = smartNamingConfigs.resolveActiveModel();
 
-        assertThat(smartNamingConfigs.getUsedModel()).isEqualTo("local-qwen");
-        assertThat(model.getUrl()).isEqualTo("http://localhost:1234/v1");
-        assertThat(model.getModel()).isEqualTo("qwen3.5_4B-test");
+        assertThat(smartNamingConfigs.getUsedModel()).isEqualTo("wiremock-test");
+        assertThat(model.getUrl()).isEqualTo("http://localhost:18089/v1");
+        assertThat(model.getModel()).isEqualTo("test-model");
         assertThat(model.getAuth()).isNull();
     }
 
@@ -54,8 +54,12 @@ public class SmartNamingConfigsTest {
     @Test
     public void systemPromptIsLoaded() {
         assertThat(smartNamingConfigs.getSystemPrompt())
-                .contains("Test system prompt line 1")
-                .contains("Test system prompt line 2");
+                .contains("Return ONLY JSON");
+    }
+
+    @Test
+    public void maxRetriesDefaultFromYaml() {
+        assertThat(smartNamingConfigs.getMaxRetries()).isEqualTo(3);
     }
 
     @org.springframework.boot.SpringBootConfiguration

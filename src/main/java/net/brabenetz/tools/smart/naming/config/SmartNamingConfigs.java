@@ -15,6 +15,7 @@ public class SmartNamingConfigs {
     private String usedModel;
     private Map<String, LlmModelConfig> models = new HashMap<>();
     private String systemPrompt;
+    private int maxRetries = 3;
 
     public LlmModelConfig resolveActiveModel() {
         return resolveModel(usedModel);
@@ -53,5 +54,13 @@ public class SmartNamingConfigs {
 
     public void setSystemPrompt(String systemPrompt) {
         this.systemPrompt = systemPrompt;
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
+    }
+
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
     }
 }

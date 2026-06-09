@@ -5,7 +5,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.8.RELEASE</version>
-        <relativePath />
+        <relativePath></relativePath>
     </parent>
     <groupId>net.brabenetz.tools</groupId>
     <artifactId>smart-naming</artifactId>
@@ -16,13 +16,26 @@
         <dependency-commons-collections4.version>4.4</dependency-commons-collections4.version>
         <dependency-commons-io.version>2.6</dependency-commons-io.version>
         <dependency-commons-text.version>1.8</dependency-commons-text.version>
+        <dependency-openai-java.version>4.39.1</dependency-openai-java.version>
+        <dependency-wiremock-jre8.version>2.35.2</dependency-wiremock-jre8.version>
+        <jackson.version>2.13.5</jackson.version>
         <java.version>1.8</java.version>
+        <kotlin.version>1.8.22</kotlin.version>
         <plugin-maven-assembly-plugin.version>3.1.1</plugin-maven-assembly-plugin.version>
         <plugin-maven-jar-plugin.version>3.1.2</plugin-maven-jar-plugin.version>
         <plugin-sortpom-maven-plugin.version>2.10.0</plugin-sortpom-maven-plugin.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.openai</groupId>
+            <artifactId>openai-java</artifactId>
+            <version>${dependency-openai-java.version}</version>
+        </dependency>
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
@@ -48,6 +61,10 @@
             <version>${dependency-commons-text.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
@@ -55,6 +72,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.tomakehurst</groupId>
+            <artifactId>wiremock-jre8</artifactId>
+            <version>${dependency-wiremock-jre8.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>

@@ -1,17 +1,40 @@
 # Application configuration (external, not bundled in JAR)
 smartnaming:
   used-model: local-qwen
+  max-retries: 3
   models:
     local-qwen:
       url: http://localhost:1234/v1
       model: qwen3.5_4B
     open-ai:
       url: https://api.openai.com/v1
-      model: gpt-4
+      model: gpt-4o
       auth:
         api-token: ${OPENAI_API_KEY:}
   system-prompt: |
-    Some very complex multi-line prompt -> Must be defined later
+    You are a document naming assistant. Analyze each attached file and propose a new filename.
+
+    Respond with ONLY a valid JSON object. No markdown, no explanation, no code fences.
+    Keys must be the exact original filenames as provided.
+    Values must be the proposed new filenames.
+
+    Filename schema:
+    YYYY-MM-DD_SOURCE_DESCRIPTION_[PRICE]_(COUNTER).extension
+
+    Rules:
+    - YYYY-MM-DD: document issue date (required)
+    - SOURCE: issuer or business name, short (required)
+    - DESCRIPTION: very short topic description (required)
+    - PRICE: optional total amount with currency, e.g. 12,34EUR (for invoices)
+    - COUNTER: running number in parentheses, e.g. (1), (2) — required when multiple files are submitted together
+    - extension: keep the original file extension
+
+    Extract from each document: issue date, issuer/source, and for invoices the total amount with currency.
+    When multiple files belong together, use the same date/source/description base and increment COUNTER.
+
+    Examples:
+    {"file1.jpg": "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg"}
+    {"file-1234.jpg": "2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(1).jpg", "file-1345.jpg": "2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(2).jpg"}
 
 windows-registry:
   target-folder: ./windows-registry

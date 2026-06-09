@@ -1,7 +1,11 @@
 package net.brabenetz.tools.smart.naming;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import net.brabenetz.tools.smart.naming.support.OpenAiWireMockSupport;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.io.File;
@@ -15,11 +19,21 @@ public class SmartNamingCommandLineApplicationIntegrationTest {
 
     private static final File TEST_RESULT_DIRECTORY = new File("./target/tests/SmartNamingCommandLineApplicationIntegrationTest");
 
+    @ClassRule
+    public static WireMockRule wireMockRule = OpenAiWireMockSupport.createRule();
+
+    @BeforeClass
+    public static void stubOpenAiOnce() {
+        OpenAiWireMockSupport.stubFileUpload("file-cli-test");
+    }
+
     @Before
-    public void cleanTestDirectory() throws IOException {
+    public void setUp() throws IOException {
         if (TEST_RESULT_DIRECTORY.exists()) {
             FileUtils.deleteDirectory(TEST_RESULT_DIRECTORY);
         }
+        wireMockRule.resetRequests();
+        OpenAiWireMockSupport.stubFileUpload("file-cli-test");
     }
 
     @Test
@@ -30,21 +44,28 @@ public class SmartNamingCommandLineApplicationIntegrationTest {
 
     @Test
     public void runMainShort() throws IOException {
-        File testFile = createTempFile("single");
+        File testFile = createTempJpeg("single");
+        stubSuggestion(testFile.getName(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg");
         SmartNamingCommandLineApplication.main("-r", "-f", testFile.getAbsolutePath());
     }
 
     @Test
     public void runMainLong() throws IOException {
-        File testFile = createTempFile("single-long");
+        File testFile = createTempJpeg("single-long");
+        stubSuggestion(testFile.getName(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR_(1).jpg");
         SmartNamingCommandLineApplication.main("--run", "--files", testFile.getAbsolutePath());
     }
 
     @Test
     public void runMainMultipleFiles() throws IOException {
-        File file1 = createTempFile("multi-1");
-        File file2 = createTempFile("multi-2");
-        File file3 = createTempFile("multi-3");
+        File file1 = createTempJpeg("multi-1");
+        File file2 = createTempJpeg("multi-2");
+        File file3 = createTempJpeg("multi-3");
+        OpenAiWireMockSupport.stubChatCompletion("{"
+                + "\"" + file1.getName() + "\":\"2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(1).jpg\","
+                + "\"" + file2.getName() + "\":\"2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(2).jpg\","
+                + "\"" + file3.getName() + "\":\"2026-05-01_Anwaltsschreiben-XY_Erwachsenenvertretung_(3).jpg\""
+                + "}");
         SmartNamingCommandLineApplication.main("--run", "--files",
                 file1.getAbsolutePath(), file2.getAbsolutePath(), file3.getAbsolutePath());
     }
@@ -67,13 +88,15 @@ public class SmartNamingCommandLineApplicationIntegrationTest {
         assertRegistryContent(registryFile);
     }
 
-    private static File createTempFile(String name) throws IOException {
+    private static File createTempJpeg(String name) throws IOException {
         if (!TEST_RESULT_DIRECTORY.exists()) {
             FileUtils.forceMkdir(TEST_RESULT_DIRECTORY);
         }
-        File file = new File(TEST_RESULT_DIRECTORY, name + ".txt");
-        FileUtils.writeStringToFile(file, "test", StandardCharsets.UTF_8);
-        return file;
+        return OpenAiWireMockSupport.createMinimalJpeg(new File(TEST_RESULT_DIRECTORY, name + ".jpg"));
+    }
+
+    private static void stubSuggestion(String originalName, String suggestedName) {
+        OpenAiWireMockSupport.stubChatCompletion("{\"" + originalName + "\":\"" + suggestedName + "\"}");
     }
 
     private static void assertRegistryContent(File registryFile) throws IOException {

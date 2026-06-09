@@ -1,5 +1,6 @@
 smartnaming:
-  used-model: local-qwen
+  used-model: wiremock-test
+  max-retries: 3
   models:
     local-qwen:
       url: http://localhost:1234/v1
@@ -9,9 +10,12 @@ smartnaming:
       model: gpt-4-test
       auth:
         api-token: test-token
+    wiremock-test:
+      url: http://localhost:18089/v1
+      model: test-model
   system-prompt: |
-    Test system prompt line 1
-    Test system prompt line 2
+    Return ONLY JSON mapping original filenames to new names.
+    Schema: YYYY-MM-DD_SOURCE_DESCRIPTION_(COUNTER).ext
 
 windows-registry:
   target-folder: ./target/tests/SmartNamingCommandLineApplicationIntegrationTest/
