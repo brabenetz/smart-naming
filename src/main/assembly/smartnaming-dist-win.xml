@@ -21,6 +21,10 @@
             <directory>src/main/assembly/config</directory>
             <outputDirectory>config/</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>src/main/assembly/win-tools</directory>
+            <outputDirectory>win-tools/</outputDirectory>
+        </fileSet>
     </fileSets>
     <dependencySets>
         <dependencySet>

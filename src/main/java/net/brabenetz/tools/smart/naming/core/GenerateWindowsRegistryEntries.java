@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class GenerateWindowsRegistryEntries {
@@ -30,8 +29,9 @@ public class GenerateWindowsRegistryEntries {
 
     public File generateRegistry() throws IOException {
         File targetFolder = windowsRegistryConfigs.getTargetFolder();
+        File singleinstanceFile = new File(targetFolder, "../win-tools/singleinstance.exe");
         File commandFile = createCommandFile(targetFolder);
-        File registryFile = createRegistryFile(targetFolder, commandFile);
+        File registryFile = createRegistryFile(targetFolder, commandFile, singleinstanceFile);
 
         LOG.info("Created: {}", commandFile);
         LOG.info("Created: {}", registryFile);
@@ -39,43 +39,47 @@ public class GenerateWindowsRegistryEntries {
     }
 
     @SuppressWarnings("squid:S1192")
-    private File createRegistryFile(File targetFolder, File commandFile) throws IOException {
+    private File createRegistryFile(File targetFolder, File commandFile, File singleinstanceFile) throws IOException {
         Collection<String> lines = new ArrayList<>();
         lines.add("Windows Registry Editor Version 5.00");
         lines.add(System.lineSeparator());
 
-        addCommandToRegistry(lines, "Run Smart-Naming", commandFile,
-                "-run", "--files", "%*");
+        addCommandToRegistry(lines, "Run Smart-Naming", quoted(singleinstanceFile.getCanonicalPath()), quoted("%1"),
+            quoted(commandFile.getCanonicalPath()), "-run", "--files", quoted("\\\"$files\\\""), "--si-timeout", "400");
 
         File registryFile = new File(targetFolder, "SmartNaming-Install.reg");
         FileUtils.writeLines(registryFile, StandardCharsets.ISO_8859_1.name(), lines);
         return registryFile;
     }
 
-    private void addCommandToRegistry(Collection<String> lines, String commandName, File commandFile, String... args) throws IOException {
-        String commandCanonicalPath = commandFile.getCanonicalPath();
-        String commandLine = buildRegistryCommandLine(commandCanonicalPath, args);
+    private void addCommandToRegistry(Collection<String> lines, String commandName, String... args) throws IOException {
+      String commandLine = buildRegistryCommandLine(args);
 
-        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandName));
+      String commandKey = commandName.replaceAll("[\\s-]", "");
+
+      lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandKey));
         lines.add(String.format("@=\"%s\"", commandName));
+        lines.add("\"MultiSelectModel\"=\"Player\"");
         lines.add(System.lineSeparator());
 
-        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandName));
+        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandKey));
         lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
         lines.add(System.lineSeparator());
     }
 
-    private String buildRegistryCommandLine(String commandCanonicalPath, String... args) {
+    private String buildRegistryCommandLine(String... args) {
         if (args.length > 0 && "%*".equals(args[args.length - 1])) {
             String[] quotedArgs = Arrays.copyOf(args, args.length - 1);
-            String quotedPart = Stream.concat(Arrays.stream(new String[] {commandCanonicalPath}), Arrays.stream(quotedArgs))
-                    .map(arg -> "\"" + arg + "\"")
+            String quotedPart = Arrays.stream(quotedArgs)
                     .collect(Collectors.joining(" "));
             return quotedPart + " %*";
         }
-        return Stream.concat(Arrays.stream(new String[] {commandCanonicalPath}), Arrays.stream(args))
-                .map(arg -> "\"" + arg + "\"")
+        return Arrays.stream(args)
                 .collect(Collectors.joining(" "));
+    }
+
+    private String quoted(String arg) {
+      return "\"" + arg + "\"";
     }
 
     private File createCommandFile(File targetFolder) throws IOException {

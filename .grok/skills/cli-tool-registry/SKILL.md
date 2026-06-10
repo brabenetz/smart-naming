@@ -48,6 +48,8 @@ addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
 
 Registry key: `HKEY_CLASSES_ROOT\*\shell\` (all file types, multi-select).
 
+`addCommandToRegistry()` sets `"MultiSelectModel"="Player"` on the shell key. **Required** when using `%*` — without it Windows defaults to Document mode (one process per file, `%*` empty → CLI errors like missing `--files`).
+
 **Single folder selection (legacy):**
 
 ```java

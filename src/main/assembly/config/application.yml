@@ -1,14 +1,16 @@
 # Application configuration (external, not bundled in JAR)
 smartnaming:
-  used-model: local-qwen
-  max-retries: 3
+  used-model: grok
   models:
     local-qwen:
       url: http://localhost:1234/v1
-      model: qwen3.5_4B
+      model: qwen3.5-4b
       file-delivery: inline-image
-    open-ai:
-      url: https://api.openai.com/v1
-      model: gpt-4o
-      auth:
-        api-token: ${OPENAI_API_KEY:}
+      # auth:api-token as env-var: SMARTNAMING_MODELS_LOCAL-QWEN_AUTH_API-TOKEN
+      # or auto-ecrypted in /application.properties:  smartnaming.models.local-qwen.auth.api-token=...
+    grok:
+      url: https://api.x.ai/v1
+      model: grok-4.3
+      file-delivery: inline-image
+      # auth:api-token as env-var: SMARTNAMING_MODELS_GROK_AUTH_API-TOKEN
+      # or auto-ecrypted in /application.properties:  smartnaming.models.grok.auth.api-token=...

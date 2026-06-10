@@ -57,6 +57,7 @@ public class GenerateWindowsRegistryEntries {
 
         lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandName));
         lines.add(String.format("@=\"%s\"", commandName));
+        lines.add("\"MultiSelectModel\"=\"Player\"");
         lines.add(System.lineSeparator());
 
         lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandName));

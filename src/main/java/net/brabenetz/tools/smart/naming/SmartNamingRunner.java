@@ -11,6 +11,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -18,9 +19,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,6 +75,7 @@ public class SmartNamingRunner implements CommandLineRunner {
                 if (filePaths == null || filePaths.length == 0) {
                     throw new SmartNamingException("Option --files is required with --run (at least one file)");
                 }
+                filePaths = correctSingleArg(filePaths);
                 List<File> files = Arrays.stream(filePaths)
                         .map(File::new)
                         .collect(Collectors.toList());
@@ -102,6 +108,48 @@ public class SmartNamingRunner implements CommandLineRunner {
                 LOG.error("Unknown Error Smart-Naming: {}", e.getMessage(), e);
             }
         }
+    }
+
+    /**
+     * Corrects a single command line argument containing multiple single-quoted file paths.
+     * <p>
+     * Needed for https://github.com/owenstake/context-menu-launcher/
+     */
+    protected String[] correctSingleArg(String... filePaths) {
+      if (filePaths.length != 1) {
+          return filePaths;
+      }
+  
+      String input = filePaths[0];
+      if (input == null || StringUtils.isBlank(input) || !input.trim().startsWith("'")) {
+          return filePaths;
+      }
+
+      // Regex explanation:
+      // Matches single-quoted segments while allowing apostrophes (') inside filenames,
+      // as long as the apostrophe is not followed by whitespace (which would indicate
+      // the start of the next file argument).
+      //
+      // Example matches:
+      // 'file 1.png'
+      // 'My File's sibling's.png'
+      // 'My File's sibling's.png' 'file 2.png'
+      Pattern pattern = Pattern.compile("'((?:[^']|'[^\\s])*)'");
+      Matcher matcher = pattern.matcher(input);
+  
+      List<String> files = new ArrayList<>();
+      while (matcher.find()) {
+          files.add(matcher.group(1));
+      }
+
+      // Only convert to array if we actually found quoted file(s)
+      if (!files.isEmpty()) {
+          return files.toArray(new String[0]);
+      }
+  
+      // fallback: return input unchanged.
+      return filePaths;
+      
     }
 
     private static SmartNamingException getAppExceptionIfPossible(final Throwable e) {

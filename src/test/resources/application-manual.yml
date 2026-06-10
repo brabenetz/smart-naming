@@ -1,13 +1,19 @@
 smartnaming:
   used-model: local-qwen
   models:
-    local-qwen:
+    local-qwen:  # approx 30sec
       url: http://localhost:1234/v1
       model: qwen3.5-4b
       file-delivery: inline-image
       # auth:api-token as env-var: SMARTNAMING_MODELS_LOCAL-QWEN_AUTH_API-TOKEN
       # or auto-ecrypted in /application.properties:  smartnaming.models.local-qwen.auth.api-token=...
-    grok:
+    local-gemma:  # approx 90sec
+      url: http://localhost:1234/v1
+      model: google/gemma-4-12b-qat
+      file-delivery: inline-image
+      # auth:api-token as env-var: SMARTNAMING_MODELS_LOCAL-QWEN_AUTH_API-TOKEN
+      # or auto-ecrypted in /application.properties:  smartnaming.models.local-qwen.auth.api-token=...
+    grok:  # approx 10sec
       url: https://api.x.ai/v1
       model: grok-4.3
       file-delivery: inline-image

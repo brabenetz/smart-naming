@@ -101,8 +101,9 @@ public class SmartNamingCommandLineApplicationIntegrationTest {
 
     private static void assertRegistryContent(File registryFile) throws IOException {
         String content = new String(Files.readAllBytes(registryFile.toPath()), StandardCharsets.ISO_8859_1);
-        assertThat(content).contains("[HKEY_CLASSES_ROOT\\*\\shell\\Run Smart-Naming]");
-        assertThat(content).contains("\\\"-run\\\" \\\"--files\\\" %*");
+        assertThat(content).contains("[HKEY_CLASSES_ROOT\\*\\shell\\RunSmartNaming]");
+        assertThat(content).contains("\"MultiSelectModel\"=\"Player\"");
+        assertThat(content).contains("-run --files \\\"\\\\\\\"$files\\\\\\\"\\\" --si-timeout 400");
         assertThat(content).doesNotContain("Directory\\shell");
     }
 }
