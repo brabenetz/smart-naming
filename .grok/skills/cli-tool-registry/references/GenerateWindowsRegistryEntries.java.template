@@ -44,6 +44,8 @@ public class GenerateWindowsRegistryEntries {
         lines.add("Windows Registry Editor Version 5.00");
         lines.add(System.lineSeparator());
 
+        // Choose ONE variant from references/registry-entries.example.txt (D, F1, F2, or F3).
+        // Copy the matching helper methods from references/registry-variant-*.java.snippet.
         {{REGISTRY_ENTRIES}}
 
         File registryFile = new File(targetFolder, "{{APP_NAME}}-Install.reg");
@@ -51,16 +53,20 @@ public class GenerateWindowsRegistryEntries {
         return registryFile;
     }
 
-    private void addCommandToRegistry(Collection<String> lines, String commandName, File commandFile, String... args) throws IOException {
-        String commandCanonicalPath = commandFile.getCanonicalPath();
-        String commandLine = buildRegistryCommandLine(commandCanonicalPath, args);
+    // --- Generic helpers (extend per chosen variant — see SKILL.md) ---
 
-        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandName));
+    private void addShellCommandToRegistry(Collection<String> lines, String shellKeyPath,
+            String commandName, String commandLine, String multiSelectModel) {
+        String commandKey = commandName.replaceAll("[\\s-]", "");
+
+        lines.add(String.format("[HKEY_CLASSES_ROOT\\%s\\%s]", shellKeyPath, commandKey));
         lines.add(String.format("@=\"%s\"", commandName));
-        lines.add("\"MultiSelectModel\"=\"Player\"");
+        if (multiSelectModel != null) {
+            lines.add(String.format("\"MultiSelectModel\"=\"%s\"", multiSelectModel));
+        }
         lines.add(System.lineSeparator());
 
-        lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandName));
+        lines.add(String.format("[HKEY_CLASSES_ROOT\\%s\\%s\\command]", shellKeyPath, commandKey));
         lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
         lines.add(System.lineSeparator());
     }
@@ -76,6 +82,14 @@ public class GenerateWindowsRegistryEntries {
         return Stream.concat(Arrays.stream(new String[] {commandCanonicalPath}), Arrays.stream(args))
                 .map(arg -> "\"" + arg + "\"")
                 .collect(Collectors.joining(" "));
+    }
+
+    private String buildRawRegistryCommandLine(String... args) {
+        return Arrays.stream(args).collect(Collectors.joining(" "));
+    }
+
+    private String quoted(String arg) {
+        return "\"" + arg + "\"";
     }
 
     private File createCommandFile(File targetFolder) throws IOException {

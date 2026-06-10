@@ -1,9 +1,36 @@
-// Replace {{REGISTRY_ENTRIES}} in GenerateWindowsRegistryEntries.java with calls like:
+// Replace {{REGISTRY_ENTRIES}} in GenerateWindowsRegistryEntries.java.
+// Choose ONE variant (D, F1, F2, or F3). See SKILL.md for when to use each.
 
-// Multi-file selection (Explorer: mark multiple files, context menu):
-addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+// =============================================================================
+// Variant D — Directory context menu (one selected folder)
+// Registry key: HKEY_CLASSES_ROOT\Directory\shell\
+// =============================================================================
+addDirectoryCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+        "-run", "--{{CONFIG_PREFIX}}.source-folder=%1");
+
+// =============================================================================
+// Variant F1 — Files, one process per file
+// Registry key: HKEY_CLASSES_ROOT\*\shell\  (no MultiSelectModel, or Document)
+// =============================================================================
+addFilePerFileCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+        "-run", "--files", "%1");
+
+// =============================================================================
+// Variant F2 — Files, batched via context-menu-launcher (recommended)
+// Registry key: HKEY_CLASSES_ROOT\*\shell\  + MultiSelectModel=Player
+// Requires: win-tools/singleinstance.exe, correctSingleArg() in runner
+// =============================================================================
+File singleinstanceFile = new File(targetFolder, "../win-tools/singleinstance.exe");
+
+addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}",
+        quoted(singleinstanceFile.getCanonicalPath()),
+        quoted("%1"),
+        quoted(commandFile.getCanonicalPath()),
+        "-run", "--files", quoted("\\\"$files\\\""), "--si-timeout", "400");
+
+// =============================================================================
+// Variant F3 — Files, direct %* (simple, often unreliable for multi-select)
+// Registry key: HKEY_CLASSES_ROOT\*\shell\  + MultiSelectModel=Player
+// =============================================================================
+addFileBatchedDirect(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
         "-run", "--files", "%*");
-
-// Single-folder selection (legacy, Directory context menu — change *\shell to Directory\shell in template):
-addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}} Simulation", commandFile,
-        "-run", "--{{CONFIG_PREFIX}}.some-property=%1", "--{{CONFIG_PREFIX}}.simulate=true");

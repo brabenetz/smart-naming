@@ -1,0 +1,25 @@
+// Variant F3 — Files, direct %* (simple, often unreliable for multi-select)
+// Add to createRegistryFile() in GenerateWindowsRegistryEntries.java
+
+addFileBatchedDirect(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+        "-run", "--files", "%*");
+
+// --- Helper method (add to GenerateWindowsRegistryEntries) ---
+
+private void addFileBatchedDirect(Collection<String> lines, String commandName,
+        File commandFile, String... args) throws IOException {
+    String commandLine = buildRegistryCommandLine(commandFile.getCanonicalPath(), args);
+
+    String commandKey = commandName.replaceAll("[\\s-]", "");
+
+    lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandKey));
+    lines.add(String.format("@=\"%s\"", commandName));
+    lines.add("\"MultiSelectModel\"=\"Player\"");
+    lines.add(System.lineSeparator());
+
+    lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandKey));
+    lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
+    lines.add(System.lineSeparator());
+}
+
+// buildRegistryCommandLine() must keep %* unquoted when it is the last argument — see template.

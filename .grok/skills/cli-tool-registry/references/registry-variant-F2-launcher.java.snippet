@@ -1,0 +1,34 @@
+// Variant F2 — Files, batched via context-menu-launcher (recommended)
+// Add to generateRegistry() and createRegistryFile() in GenerateWindowsRegistryEntries.java
+
+File singleinstanceFile = new File(targetFolder, "../win-tools/singleinstance.exe");
+
+addCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}",
+        quoted(singleinstanceFile.getCanonicalPath()),
+        quoted("%1"),
+        quoted(commandFile.getCanonicalPath()),
+        "-run", "--files", quoted("\\\"$files\\\""), "--si-timeout", "400");
+
+// --- Helper methods (add to GenerateWindowsRegistryEntries) ---
+
+private void addCommandToRegistry(Collection<String> lines, String commandName, String... args) {
+    String commandLine = buildRegistryCommandLine(args);
+    String commandKey = commandName.replaceAll("[\\s-]", "");
+
+    lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandKey));
+    lines.add(String.format("@=\"%s\"", commandName));
+    lines.add("\"MultiSelectModel\"=\"Player\"");
+    lines.add(System.lineSeparator());
+
+    lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandKey));
+    lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
+    lines.add(System.lineSeparator());
+}
+
+private String buildRegistryCommandLine(String... args) {
+    return Arrays.stream(args).collect(Collectors.joining(" "));
+}
+
+private String quoted(String arg) {
+    return "\"" + arg + "\"";
+}

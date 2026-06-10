@@ -1,0 +1,23 @@
+// Variant F1 — Files, one process per file
+// Add to createRegistryFile() in GenerateWindowsRegistryEntries.java
+
+addFilePerFileCommandToRegistry(lines, "Run {{APP_DISPLAY_NAME}}", commandFile,
+        "-run", "--files", "%1");
+
+// --- Helper method (add to GenerateWindowsRegistryEntries) ---
+
+private void addFilePerFileCommandToRegistry(Collection<String> lines, String commandName,
+        File commandFile, String... args) throws IOException {
+    String commandLine = buildRegistryCommandLine(commandFile.getCanonicalPath(), args);
+
+    String commandKey = commandName.replaceAll("[\\s-]", "");
+
+    lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s]", commandKey));
+    lines.add(String.format("@=\"%s\"", commandName));
+    // No MultiSelectModel — Document is default (one process per file)
+    lines.add(System.lineSeparator());
+
+    lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandKey));
+    lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
+    lines.add(System.lineSeparator());
+}

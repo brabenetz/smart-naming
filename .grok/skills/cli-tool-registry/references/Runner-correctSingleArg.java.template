@@ -1,0 +1,44 @@
+// Add to {{RUNNER_CLASS}} — required for Variant F2 (context-menu-launcher).
+// Call before processing --files values:
+//
+//   String[] filePaths = cmd.getOptionValues("files");
+//   filePaths = correctSingleArg(filePaths);
+
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Corrects a single command line argument containing multiple single-quoted file paths.
+ * <p>
+ * Needed for https://github.com/owenstake/context-menu-launcher/
+ */
+protected String[] correctSingleArg(String... filePaths) {
+    if (filePaths.length != 1) {
+        return filePaths;
+    }
+
+    String input = filePaths[0];
+    if (input == null || StringUtils.isBlank(input) || !input.trim().startsWith("'")) {
+        return filePaths;
+    }
+
+    // Matches single-quoted segments while allowing apostrophes (') inside filenames,
+    // as long as the apostrophe is not followed by whitespace (start of next file arg).
+    Pattern pattern = Pattern.compile("'((?:[^']|'[^\\s])*)'");
+    Matcher matcher = pattern.matcher(input);
+
+    List<String> files = new ArrayList<>();
+    while (matcher.find()) {
+        files.add(matcher.group(1));
+    }
+
+    if (!files.isEmpty()) {
+        return files.toArray(new String[0]);
+    }
+
+    return filePaths;
+}
