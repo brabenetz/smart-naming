@@ -27,6 +27,18 @@ public class FileNamingResponseParser {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * Parses and validates an LLM naming response as a JSON map of original to suggested filenames.
+     *
+     * <p>Example input: {@code {"old.jpg": "2024-01-15_beach.jpg"}}
+     * <br>Example output: {@code Optional.of({"old.jpg": "2024-01-15_beach.jpg"})}
+     * <br>Invalid JSON or unparseable content: {@code Optional.empty()}
+     *
+     * @param rawResponse assistant message content from the chat completion
+     * @param inputFiles files that were sent to the model (used for key validation)
+     * @return validated suggestions, or empty when the response cannot be parsed
+     * @throws SmartNamingException when the JSON is parseable but fails validation rules
+     */
     public Optional<Map<String, String>> parse(String rawResponse, List<File> inputFiles) {
         if (StringUtils.isBlank(rawResponse)) {
             return Optional.empty();
@@ -45,6 +57,7 @@ public class FileNamingResponseParser {
         }
     }
 
+    // LLM responses may wrap JSON in markdown code fences; strip them before parsing
     private String stripMarkdownFences(String content) {
         String[] lines = content.split("\\R");
         StringBuilder builder = new StringBuilder();

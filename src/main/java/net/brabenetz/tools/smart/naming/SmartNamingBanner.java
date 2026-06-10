@@ -28,6 +28,15 @@ public class SmartNamingBanner implements Banner {
 
     private static final int STRAP_LINE_SIZE = Arrays.stream(BANNER).map(String::length).max(Integer::compare).orElse(0);
 
+    /**
+     * Prints the ASCII-art banner and application version to the console.
+     *
+     * <p>Example output: multi-line {@code Smart-Naming} logo followed by {@code :: Smart-Naming :: v1.0}
+     *
+     * @param environment Spring environment (unused)
+     * @param sourceClass source class (unused)
+     * @param printStream console output stream
+     */
     @Override
     public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
         for (String line : BANNER) {

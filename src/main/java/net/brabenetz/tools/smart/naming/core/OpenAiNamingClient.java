@@ -20,6 +20,17 @@ public class OpenAiNamingClient {
     @Resource
     private OpenAiClientFactory openAiClientFactory;
 
+    /**
+     * Requests filename suggestions from an OpenAI-compatible chat completion API.
+     *
+     * <p>Builds a user message with the file list and attached files (upload IDs or inline images).
+     * <br>Example output: {@code {"photo.jpg": "2024-01-15_beach.jpg"}}
+     *
+     * @param modelConfig URL, model name, and auth for the API client
+     * @param systemPrompt instructions including target filename pattern
+     * @param uploadedFiles prepared file references from {@link LlmFileContentBuilder}
+     * @return raw assistant message content (may include markdown fences)
+     */
     public String requestNamingSuggestions(LlmModelConfig modelConfig, String systemPrompt,
             List<UploadedFileReference> uploadedFiles) {
         OpenAIClient client = openAiClientFactory.createClient(modelConfig);

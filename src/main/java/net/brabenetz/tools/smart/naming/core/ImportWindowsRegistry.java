@@ -21,6 +21,17 @@ public class ImportWindowsRegistry {
     @Resource
     private WindowsRegistryConfigs windowsRegistryEntriesConfigs;
 
+    /**
+     * Imports a generated {@code .reg} file via {@code reg import} (requires Administrator on Windows).
+     *
+     * <p>Example input: {@code SmartNaming-Install.reg}
+     * <br>On success, registry entries appear under {@code HKEY_CLASSES_ROOT\*\shell\}.
+     *
+     * @param registryFile {@code .reg} file to import
+     * @throws SmartNamingException if the file is missing, access is denied, or import fails
+     * @throws IOException if process streams cannot be read
+     * @throws InterruptedException if the import process is interrupted
+     */
     public void importRegistry(File registryFile) throws IOException, InterruptedException {
         if (!registryFile.exists()) {
             throw new SmartNamingException(String.format("Not found: '%s'", registryFile.getAbsolutePath()));
@@ -42,6 +53,7 @@ public class ImportWindowsRegistry {
                 throw new SmartNamingException(String.format("could not import: '%s'", registryFile.getAbsolutePath()));
             }
         } else {
+            // reg import reports success on stderr on some Windows versions
             errorLines.forEach(LOG::info);
         }
     }

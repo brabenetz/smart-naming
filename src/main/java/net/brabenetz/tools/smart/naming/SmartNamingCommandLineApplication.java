@@ -32,6 +32,11 @@ public class SmartNamingCommandLineApplication {
     @Autowired
     private SmartNamingConfigs smartNamingConfigs;
 
+    /**
+     * Logs environment info at startup and encrypts configured API tokens in application properties.
+     *
+     * <p>Encrypts all {@code smartnaming.models.*.auth.api-token} keys found in the active configuration.
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
       LOG.info("Current Java-Version: {}; OS: {}; Timezone: {}; Lang: {}",

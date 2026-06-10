@@ -17,6 +17,16 @@ public class FileRenameService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FileRenameService.class);
 
+    /**
+     * Physically renames source files according to the suggestion map.
+     *
+     * <p>Example: source {@code /tmp/photo.jpg}, map {@code {"photo.jpg": "2024-01-15_beach.jpg"}}
+     * <br>Result: file moved to {@code /tmp/2024-01-15_beach.jpg}
+     *
+     * @param sourceFiles files to rename (parent directory must be writable)
+     * @param suggestionsByOriginalName map keyed by {@link File#getName()}
+     * @throws SmartNamingException if a suggestion is missing, target exists, or IO fails
+     */
     public void renameFiles(List<File> sourceFiles, Map<String, String> suggestionsByOriginalName) {
         for (File sourceFile : sourceFiles) {
             String originalName = sourceFile.getName();

@@ -44,6 +44,14 @@ public class SmartNamingRunner implements CommandLineRunner {
     @Resource
     private ImportWindowsRegistry importWindowsRegistry;
 
+    /**
+     * Parses CLI arguments and dispatches to run, registry generation, install, or help.
+     *
+     * <p>Example: {@code -run --files photo.jpg scan.pdf}
+     * <br>Example (context-menu-launcher): {@code -run --files 'photo.jpg' 'scan.pdf'}
+     *
+     * @param args command-line arguments passed to the Spring Boot application
+     */
     @Override
     public void run(final String... args) {
         Option helpOption = new Option("h", "help", false, "print this help-screen.");
@@ -111,9 +119,15 @@ public class SmartNamingRunner implements CommandLineRunner {
     }
 
     /**
-     * Corrects a single command line argument containing multiple single-quoted file paths.
-     * <p>
-     * Needed for https://github.com/owenstake/context-menu-launcher/
+     * Parses a single CLI argument that may contain multiple single-quoted file paths.
+     *
+     * <p>Needed for <a href="https://github.com/owenstake/context-menu-launcher/">context-menu-launcher</a>.
+     * <p>Example input: {@code ["'file 1.png' 'file 2.png'"]}
+     * <br>Example output: {@code ["file 1.png", "file 2.png"]}
+     * <br>Unchanged when multiple args are already passed: {@code ["a.jpg", "b.jpg"]}
+     *
+     * @param filePaths raw values from Commons CLI
+     * @return individual file paths; unchanged when input is not a quoted list
      */
     protected String[] correctSingleArg(String... filePaths) {
       if (filePaths.length != 1) {

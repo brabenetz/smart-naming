@@ -31,6 +31,17 @@ public class SmartNamingService {
     @Resource
     private FileRenameService fileRenameService;
 
+    /**
+     * Runs smart naming for the given files: prepares content for the LLM, requests suggestions
+     * with retries, validates the response, and renames files on disk.
+     *
+     * <p>Example input: {@code [new File("photo.jpg"), new File("scan.pdf")]}
+     * <br>Example output: {@code {"photo.jpg": "2024-01-15_vacation_beach.jpg", "scan.pdf": "2024-01-15_invoice_acme.pdf"}}
+     *
+     * @param files readable regular files to rename
+     * @return map of original filename to suggested filename
+     * @throws SmartNamingException if validation, LLM request, or rename fails
+     */
     public Map<String, String> run(List<File> files) {
         validateFiles(files);
         LlmModelConfig activeModel = smartNamingConfigs.resolveActiveModel();

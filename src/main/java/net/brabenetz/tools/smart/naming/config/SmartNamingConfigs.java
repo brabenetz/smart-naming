@@ -25,6 +25,16 @@ public class SmartNamingConfigs {
     return resolveModel(usedModel);
   }
 
+  /**
+   * Resolves the LLM model configuration for the given key.
+   *
+   * <p>Example input: {@code "lm-studio"}
+   * <br>Example output: configured {@link LlmModelConfig} for that key
+   *
+   * @param modelKey key from {@code smartnaming.models.*}
+   * @return model configuration
+   * @throws SmartNamingException if the key is blank or unknown
+   */
   public LlmModelConfig resolveModel(String modelKey) {
     if (StringUtils.isBlank(modelKey)) {
       throw new SmartNamingException("No model key configured. Set smartnaming.used-model or pass --smartnaming.used-model=<key>");
@@ -77,6 +87,14 @@ public class SmartNamingConfigs {
     this.compiledTargetFilenamePattern = null;
   }
 
+  /**
+   * Returns the compiled target filename pattern, compiling and caching it on first access.
+   *
+   * <p>Example pattern: {@code \d{4}-\d{2}-\d{2}_[a-z0-9_]+(?:_\(\d+\))?\.[a-z0-9]+}
+   *
+   * @return compiled regex for validating LLM suggestions
+   * @throws SmartNamingException if the pattern is missing or invalid
+   */
   public Pattern getCompiledTargetFilenamePattern() {
     if (compiledTargetFilenamePattern == null) {
       if (StringUtils.isBlank(targetFilenamePattern)) {

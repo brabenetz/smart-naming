@@ -27,6 +27,15 @@ public class GenerateWindowsRegistryEntries {
     @Resource
     private WindowsRegistryConfigs windowsRegistryConfigs;
 
+    /**
+     * Generates the registry wrapper script and {@code .reg} install file for the Explorer context menu.
+     *
+     * <p>Uses context-menu-launcher ({@code singleinstance.exe}) to batch multi-file selections.
+     * <br>Example output files: {@code SmartNaming-Registry.cmd}, {@code SmartNaming-Install.reg}
+     *
+     * @return the generated {@code .reg} file ready for import
+     * @throws IOException if files cannot be written
+     */
     public File generateRegistry() throws IOException {
         File targetFolder = windowsRegistryConfigs.getTargetFolder();
         File singleinstanceFile = new File(targetFolder, "../win-tools/singleinstance.exe");
@@ -53,7 +62,7 @@ public class GenerateWindowsRegistryEntries {
     }
 
     private void addCommandToRegistry(Collection<String> lines, String commandName, String... args) throws IOException {
-      String commandLine = buildRegistryCommandLine(args);
+      String commandLine = Arrays.stream(args).collect(Collectors.joining(" "));
 
       String commandKey = commandName.replaceAll("[\\s-]", "");
 
@@ -65,17 +74,6 @@ public class GenerateWindowsRegistryEntries {
         lines.add(String.format("[HKEY_CLASSES_ROOT\\*\\shell\\%s\\command]", commandKey));
         lines.add(String.format("@=\"%s\"", StringEscapeUtils.escapeJava(commandLine)));
         lines.add(System.lineSeparator());
-    }
-
-    private String buildRegistryCommandLine(String... args) {
-        if (args.length > 0 && "%*".equals(args[args.length - 1])) {
-            String[] quotedArgs = Arrays.copyOf(args, args.length - 1);
-            String quotedPart = Arrays.stream(quotedArgs)
-                    .collect(Collectors.joining(" "));
-            return quotedPart + " %*";
-        }
-        return Arrays.stream(args)
-                .collect(Collectors.joining(" "));
     }
 
     private String quoted(String arg) {

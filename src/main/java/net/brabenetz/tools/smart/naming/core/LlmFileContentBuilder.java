@@ -44,6 +44,17 @@ public class LlmFileContentBuilder {
     @Resource
     private OpenAiClientFactory openAiClientFactory;
 
+    /**
+     * Prepares files for the LLM request using either file upload or inline base64 images.
+     *
+     * <p>Example with {@code file-delivery: upload}: returns references with OpenAI file IDs.
+     * <br>Example with {@code file-delivery: inline-image}: returns data URLs for image files.
+     *
+     * @param modelConfig active model including file delivery mode
+     * @param files local files to send to the model
+     * @return one reference per input file
+     * @throws SmartNamingException for unsupported file types or IO errors
+     */
     public List<UploadedFileReference> prepareFiles(LlmModelConfig modelConfig, List<File> files) {
         if (modelConfig.getFileDelivery() == FileDeliveryMode.INLINE_IMAGE) {
             List<UploadedFileReference> inlineFiles = new ArrayList<>();
