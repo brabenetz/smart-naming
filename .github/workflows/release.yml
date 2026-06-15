@@ -104,7 +104,7 @@ jobs:
 
       - name: Push commit and tag
         run: |
-          git push origin master --tags
+          git push origin main --tags
 
       - name: Set next developer version
         run: |
@@ -117,4 +117,4 @@ jobs:
 
       - name: Push next developer version
         run: |
-          git push origin master
+          git push origin main
