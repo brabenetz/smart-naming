@@ -87,6 +87,10 @@ jobs:
           ${{ inputs.release_description }}
           EOF
 
+      - name: Push commit and tag
+        run: |
+          git push origin main --tags
+
       - name: Create GitHub Release + Upload Assets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -101,10 +105,6 @@ jobs:
             $PRERELEASE_FLAG \
             --notes-file release-notes.md \
             ${{ steps.assets.outputs.ASSETS }}
-
-      - name: Push commit and tag
-        run: |
-          git push origin main --tags
 
       - name: Set next developer version
         run: |
