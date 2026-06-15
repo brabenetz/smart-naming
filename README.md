@@ -8,6 +8,8 @@ Rename documents intelligently from the Windows File Explorer context menu using
 2. Right-click the selection.
 3. Click **Run Smart-Naming**.
 
+![Windows Context-Menue - Run SmartNaming](./img/windows-context-menu_run-smartnaming.gif)
+
 Smart-Naming sends the files to your configured model, receives rename suggestions, validates them, and renames the files locally. When you select multiple files, they are processed in a **single run** (the context-menu wrapper batches Explorer invocations).
 
 ## Installation
