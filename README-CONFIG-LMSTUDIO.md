@@ -24,6 +24,8 @@ Video walkthrough (general LM Studio usage): [YouTube — LM Studio guide](https
 3. Search for **`qwen3.5-4b`** (or the exact variant you prefer, e.g. Q4 quantization).
 4. Download the model to your local cache.
 
+![LM Studio - Search Model](./img/LM-Studio_Search-Model.png)
+
 ### 3. Load the model and start the server
 
 1. Open the **Local Server** (or **Developer** / **Serve**) tab.
@@ -35,6 +37,8 @@ Video walkthrough (general LM Studio usage): [YouTube — LM Studio guide](https
    ```
 
 4. Note the served model identifier shown in LM Studio (use the same string in Smart-Naming config).
+
+![LM Studio - Run Server](./img/LM-Studio_Run-Server.png)
 
 ### 4. Configure Smart-Naming
 
