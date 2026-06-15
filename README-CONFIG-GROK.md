@@ -11,6 +11,8 @@ Back to [README.md](README.md).
 3. Create a new API key and copy the token (starts with `xai-...`).
 4. Store it securely — it is shown only once.
 
+![𝕏 Console-API - API-Key](./img/X-Console-API_API-Key.png)
+
 ## Step 2 — Store the token
 
 **Recommended:** `config/application.properties` in your Smart-Naming install folder:
@@ -55,6 +57,13 @@ Set `smartnaming.used-model: grok` to activate this entry.
 2. Right-click a document in File Explorer → **Run Smart-Naming**.
 
 For development testing, use [SmartNamingManuellTest.java](src/test/java/net/brabenetz/tools/smart/naming/SmartNamingManuellTest.java) with `used-model: grok` in `application-manual.yml`.
+
+## Costs
+
+After Renaming seven Files my costs where 2-3 cents:
+
+![𝕏 Console-API - API-Key](./img/X-Console-API_Costs.png)
+
 
 ## Troubleshooting
 
