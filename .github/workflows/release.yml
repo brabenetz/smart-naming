@@ -1,0 +1,120 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: "Release Version (e.g. 1.0.0-beta1)"
+        required: true
+        type: string
+      release_description:
+        description: "Release Notes (Markdown possible)"
+        required: true
+        type: string
+      next_dev_version:
+        description: "Next Developer-Version (z. B. 1.1.0-SNAPSHOT)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Set Release Version in pom.xml
+        run: |
+          mvn versions:set -DnewVersion=${{ inputs.release_version }} -DgenerateBackupPoms=false -B
+
+      - name: Commit release version
+        run: |
+          git add pom.xml
+          git commit -m "chore(release): prepare version ${{ inputs.release_version }} [skip ci]"
+
+      - name: Create annotated tag
+        run: |
+          git tag -a v${{ inputs.release_version }} -m "${{ inputs.release_description }}"
+
+      - name: Build application (Release)
+        run: mvn clean verify -B
+
+      - name: Detect prerelease
+        id: prerelease
+        run: |
+          if [[ "${{ inputs.release_version }}" =~ (-beta|-alpha|-rc|SNAPSHOT) ]]; then
+            echo "is_prerelease=true" >> $GITHUB_OUTPUT
+            echo "→ Release wird als PRERELEASE markiert"
+          else
+            echo "is_prerelease=false" >> $GITHUB_OUTPUT
+            echo "→ Release wird als normales Release erstellt"
+          fi
+
+      - name: Collect release assets
+        id: assets
+        run: |
+          ASSETS=$(find target -maxdepth 1 \
+            \( -name "*.jar" -o -name "*.tar.gz" -o -name "*.zip" \) \
+            ! -name "*-sources.jar" \
+            ! -name "*-javadoc.jar" \
+            ! -name "*.original.jar" | tr '\n' ' ')
+          echo "ASSETS=$ASSETS" >> $GITHUB_OUTPUT
+          echo "Gefundene Assets zum Hochladen:"
+          echo "$ASSETS"
+
+      - name: Create release notes file
+        run: |
+          cat > release-notes.md << 'EOF'
+          ${{ inputs.release_description }}
+          EOF
+
+      - name: Create GitHub Release + Upload Assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PRERELEASE_FLAG=""
+          if [[ "${{ steps.prerelease.outputs.is_prerelease }}" == "true" ]]; then
+            PRERELEASE_FLAG="--prerelease"
+          fi
+
+          gh release create "v${{ inputs.release_version }}" \
+            --title "v${{ inputs.release_version }}" \
+            $PRERELEASE_FLAG \
+            --notes-file release-notes.md \
+            ${{ steps.assets.outputs.ASSETS }}
+
+      - name: Push commit and tag
+        run: |
+          git push origin master --tags
+
+      - name: Set next developer version
+        run: |
+          mvn versions:set -DnewVersion=${{ inputs.next_dev_version }} -DgenerateBackupPoms=false -B
+
+      - name: Commit next developer version
+        run: |
+          git add pom.xml
+          git commit -m "chore(release): prepare next development version ${{ inputs.next_dev_version }} [skip ci]"
+
+      - name: Push next developer version
+        run: |
+          git push origin master
