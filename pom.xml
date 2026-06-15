@@ -9,7 +9,7 @@
     </parent>
     <groupId>net.brabenetz.tools</groupId>
     <artifactId>smart-naming</artifactId>
-    <version>1.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <properties>
         <dependency-commons-cli.version>1.4</dependency-commons-cli.version>
