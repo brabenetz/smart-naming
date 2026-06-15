@@ -6,14 +6,16 @@ Back to [README.md](README.md).
 
 ## Default system prompt
 
-The built-in prompt and filename rules are in the JAR:
+The current default `system-prompt` and `target-filename-pattern` are maintained in the repository at [`src/main/resources/application.yml`](src/main/resources/application.yml). That file is the **authoritative, up-to-date** source when you develop or browse the project.
+
+The same content is **bundled into the JAR** at build time. In an installed distribution you can read it without the source tree:
 
 ```
 lib/smart-naming-*.jar
   └── BOOT-INF/classes/application.yml
 ```
 
-Open the JAR with [7-Zip](https://www.7-zip.org/) (or any ZIP tool) and copy the `system-prompt` block.
+Open the JAR with [7-Zip](https://www.7-zip.org/) (or any ZIP tool) and copy the `system-prompt` block. For customization, either source is fine — use whichever is easier for you.
 
 ## Override locally
 
@@ -47,11 +49,11 @@ After changes, test with a single file from the context menu or [SmartNamingManu
 
 ## Related settings
 
-| Property | Default (in JAR) | Purpose |
-|----------|------------------|---------|
+| Property | Default | Purpose |
+|----------|---------|---------|
 | `smartnaming.max-retries` | `3` | Re-request from LLM when response is invalid |
-| `smartnaming.target-filename-pattern` | see JAR | Regex validation |
-| `smartnaming.system-prompt` | see JAR | LLM instructions |
+| `smartnaming.target-filename-pattern` | see [`src/main/resources/application.yml`](src/main/resources/application.yml) | Regex validation |
+| `smartnaming.system-prompt` | see [`src/main/resources/application.yml`](src/main/resources/application.yml) | LLM instructions |
 
 ## See also
 
