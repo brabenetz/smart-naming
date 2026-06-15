@@ -65,11 +65,14 @@ public class SmartNamingRunner implements CommandLineRunner {
                 "generate Windows Registry files for File Explorer context menu");
         Option importRegistryOption = new Option("i", "install", false,
                 "install Windows Registry entries (requires Administrator)");
+        Option simulateOption = new Option(null, "simulate", false,
+                "dry-run: request and log suggestions without renaming files");
 
         Options options = new Options();
         options.addOption(helpOption);
         options.addOption(runOption);
         options.addOption(filesOption);
+        options.addOption(simulateOption);
         options.addOption(generateRegistryOption);
         options.addOption(importRegistryOption);
 
@@ -87,7 +90,11 @@ public class SmartNamingRunner implements CommandLineRunner {
                 List<File> files = Arrays.stream(filePaths)
                         .map(File::new)
                         .collect(Collectors.toList());
-                smartNamingService.run(files);
+                boolean simulate = cmd.hasOption("simulate");
+                if (simulate) {
+                    LOG.info("simulate mode enabled");
+                }
+                smartNamingService.run(files, simulate);
             } else if (cmd.hasOption("gwre")) {
                 LOG.info("run --{}", generateRegistryOption.getLongOpt());
                 generateWindowsRegistryEntries.generateRegistry();
@@ -99,7 +106,7 @@ public class SmartNamingRunner implements CommandLineRunner {
                 LOG.info("run --help");
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp(120,
-                        "\n  smartnaming -run --files <file1> <file2> ... --smartnaming.used-model=<key>\n\n",
+                        "\n  smartnaming -run --files <file1> <file2> ... [--simulate] --smartnaming.used-model=<key>\n\n",
                         "smartnaming",
                         options,
                         "\n© Brabenetz Harald");

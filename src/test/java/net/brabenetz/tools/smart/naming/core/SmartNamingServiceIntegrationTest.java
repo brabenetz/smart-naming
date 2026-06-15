@@ -62,7 +62,7 @@ public class SmartNamingServiceIntegrationTest {
         OpenAiWireMockSupport.stubChatCompletion(
                 "{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg\"}");
 
-        smartNamingService.run(Collections.singletonList(testImage));
+        smartNamingService.run(Collections.singletonList(testImage), false);
 
         verify(postRequestedFor(urlEqualTo("/v1/files")));
         verify(postRequestedFor(urlEqualTo("/v1/chat/completions")));
@@ -89,16 +89,28 @@ public class SmartNamingServiceIntegrationTest {
                         .withHeader("Content-Type", "application/json")
                         .withBody(validChatBody("{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg\"}"))));
 
-        smartNamingService.run(Collections.singletonList(testImage));
+        smartNamingService.run(Collections.singletonList(testImage), false);
 
         verify(2, postRequestedFor(urlEqualTo("/v1/chat/completions")));
+    }
+
+    @Test
+    public void runSimulateSkipsRename() {
+        OpenAiWireMockSupport.stubChatCompletion(
+                "{\"smart-naming-service-test.jpg\":\"2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg\"}");
+
+        smartNamingService.run(Collections.singletonList(testImage), true);
+
+        assertThat(testImage).exists();
+        assertThat(new File(testImage.getParentFile(), "2026-03-01_Hofer-Rechnung_Milch-Brot_12,34EUR.jpg"))
+                .doesNotExist();
     }
 
     @Test
     public void runFailsAfterMaxRetries() {
         OpenAiWireMockSupport.stubChatCompletion("not-json");
 
-        assertThatThrownBy(() -> smartNamingService.run(Collections.singletonList(testImage)))
+        assertThatThrownBy(() -> smartNamingService.run(Collections.singletonList(testImage), false))
                 .isInstanceOf(SmartNamingException.class)
                 .hasMessageContaining("Failed to obtain valid naming suggestions after 3 attempts");
 

@@ -35,7 +35,7 @@ public class SmartNamingManuellTest {
             // List<File> files = getFiles("testfile D.jpg"); // 2022-02-02_Buchmesser_Rechnung_22,00EUR.jpg
             // List<File> files = getFiles("testfile E.jpg"); // 2022-02-03_Paracelsus-Apotheke_Apotheken-Rechnung_28,40EUR.jpg
             // List<File> files = getFiles("testfile F.jpg"); // 2022-02-04_Interspar_Einkauf_5,71EUR.jpg
-            Map<String, String> suggestions = smartNamingService.run(files);
+            Map<String, String> suggestions = smartNamingService.run(files, true);
 
             System.out.println("=== Smart-Naming suggestions ===");
             suggestions.forEach((original, suggested) -> System.out.println(original + " -> " + suggested));

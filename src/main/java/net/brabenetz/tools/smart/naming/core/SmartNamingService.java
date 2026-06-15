@@ -35,14 +35,19 @@ public class SmartNamingService {
      * Runs smart naming for the given files: prepares content for the LLM, requests suggestions
      * with retries, validates the response, and renames files on disk.
      *
+     * <p>optionally skipping physical rename:
+     * <br>When {@code simulate} is {@code true}, suggestions are requested and logged but
+     * {@link FileRenameService} is not called.
+     *
      * <p>Example input: {@code [new File("photo.jpg"), new File("scan.pdf")]}
      * <br>Example output: {@code {"photo.jpg": "2024-01-15_vacation_beach.jpg", "scan.pdf": "2024-01-15_invoice_acme.pdf"}}
      *
-     * @param files readable regular files to rename
+     * @param files readable regular files to process
+     * @param simulate when {@code true}, skip file rename (dry-run)
      * @return map of original filename to suggested filename
      * @throws SmartNamingException if validation, LLM request, or rename fails
      */
-    public Map<String, String> run(List<File> files) {
+    public Map<String, String> run(List<File> files, boolean simulate) {
         validateFiles(files);
         LlmModelConfig activeModel = smartNamingConfigs.resolveActiveModel();
         String systemPrompt = smartNamingConfigs.getSystemPrompt();
@@ -71,7 +76,11 @@ public class SmartNamingService {
         Map<String, String> suggestions = requestSuggestionsWithRetry(activeModel, effectiveSystemPrompt, uploadedFiles, files);
         suggestions.forEach((original, suggested) -> LOG.info("  suggestion: {} -> {}", original, suggested));
 
-        fileRenameService.renameFiles(files, suggestions);
+        if (simulate) {
+            LOG.info("Simulate mode: skipping file rename");
+        } else {
+            fileRenameService.renameFiles(files, suggestions);
+        }
         return suggestions;
     }
 
