@@ -104,8 +104,6 @@ SMARTNAMING_MODELS_LOCAL-QWEN_AUTH_API-TOKEN=your-token-here
 
 Use the model key in uppercase with hyphens (`local-qwen` → `LOCAL-QWEN`).
 
-**Not recommended:** putting secrets directly in `application.yml`.
-
 ### Defaults (bundled in the JAR)
 
 These can be overridden in `config/application.yml`:
