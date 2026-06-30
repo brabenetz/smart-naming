@@ -11,6 +11,36 @@
     <artifactId>smart-naming</artifactId>
     <version>1.0.1-SNAPSHOT</version>
 
+    <url>https://github.com/brabenetz/smart-naming/blob/main/README.md</url>
+    <inceptionYear>2026</inceptionYear>
+
+    <organization>
+        <name>Brabenetz Harald, Austria</name>
+        <url>http://brabenetz.net</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>brabenetz</id>
+            <name>Harald Brabenetz</name>
+            <email>brabenetz@gmx.net</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+    </developers>
+
+    <contributors />
+
     <properties>
         <dependency-commons-cli.version>1.4</dependency-commons-cli.version>
         <dependency-commons-collections4.version>4.4</dependency-commons-collections4.version>
